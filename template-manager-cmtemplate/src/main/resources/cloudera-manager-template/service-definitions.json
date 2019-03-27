@@ -1,0 +1,197 @@
+{
+  "services": [
+    {
+      "name": "OOZIE",
+      "displayName": "Oozie",
+      "components": [
+        {
+          "name": "OOZIE_CLIENT",
+          "groups": ["compute", "worker"],
+          "base": true
+        },
+        {
+          "name": "OOZIE_SERVER",
+          "groups": ["master"],
+          "base": true
+        }
+      ],
+      "dependencies": [
+        "HDFS"
+      ]
+    },
+    {
+      "name": "HDFS",
+      "displayName": "Hdfs",
+      "components": [
+        {
+          "name": "BALANCER",
+          "groups": ["master"]
+        },
+        {
+          "name": "NAMENODE",
+          "groups": ["master"]
+        },
+        {
+          "name": "SECONDARYNAMENODE",
+          "groups": ["master"]
+        },
+        {
+          "name": "DATANODE",
+          "groups": ["compute"]
+        }
+      ]
+    },
+    {
+      "name": "HIVE",
+      "displayName": "Hive",
+      "components": [
+        {
+          "name": "HIVEMETASTORE",
+          "groups": ["master"]
+        },
+        {
+          "name": "HIVESERVER2",
+          "groups": ["master"]
+        },
+        {
+          "name": "GATEWAY",
+          "groups": ["master", "worker", "compute"]
+        }
+      ]
+    },
+    {
+      "name": "ZOOKEEPER",
+      "displayName": "ZooKeeper",
+      "components": [
+        {
+          "name": "SERVER",
+          "groups": ["master"]
+        }
+      ]
+    },
+    {
+      "name": "HBASE",
+      "displayName": "HBase",
+      "components": [
+        {
+          "name": "MASTER",
+          "groups": ["master"]
+        },
+        {
+          "name": "REGIONSERVER",
+          "groups": ["worker"]
+        }
+      ]
+    },
+    {
+      "name": "YARN",
+      "displayName": "Yarn",
+      "components": [
+        {
+          "name": "JOBHISTORY",
+          "groups": ["master"]
+        },
+        {
+          "name": "RESOURCEMANAGER",
+          "groups": ["master"]
+        },
+        {
+          "name": "NODEMANAGER",
+          "groups": ["worker", "compute"]
+        }
+      ]
+    },
+    {
+      "name": "SPARK_ON_YARN",
+      "displayName": "Spark On Yarn",
+      "components": [
+        {
+          "name": "GATEWAY",
+          "groups": ["master", "worker", "compute"]
+        },
+        {
+          "name": "SPARK_YARN_HISTORY_SERVER",
+          "groups": ["master"]
+        }
+      ]
+    },
+    {
+      "name": "IMPALA",
+      "displayName": "Impala",
+      "components": [
+        {
+          "name": "CATALOGSERVER",
+          "groups": ["master"]
+        },
+        {
+          "name": "STATESTORE",
+          "groups": ["master"]
+        },
+        {
+          "name": "IMPALAD",
+          "groups": ["worker"]
+        }
+      ]
+    },
+    {
+      "name": "KAFKA",
+      "displayName": "Kafka",
+      "components": [
+        {
+          "name": "KAFKA_BROKER",
+          "groups": ["master"]
+        }
+      ]
+    },
+    {
+      "name": "ISILON",
+      "displayName": "Isilon",
+      "components": [
+        {
+          "name": "GATEWAY",
+          "groups": ["master", "worker", "compute"]
+        }
+      ]
+    },
+    {
+      "name": "SENTRY",
+      "displayName": "Sentry"
+    },
+    {
+      "name": "SPARK",
+      "displayName": "Spark"
+    },
+    {
+      "name": "SOLR",
+      "displayName": "Solr",
+      "components": [
+        {
+          "name": "GATEWAY",
+          "groups": ["master", "worker", "compute"]
+        },
+        {
+          "name": "SOLR_SERVER",
+          "groups": ["master"]
+        }
+      ]
+    },
+    {
+      "name": "SQOOP",
+      "displayName": "Sqoop"
+    },
+    {
+      "name": "KUDU",
+      "displayName": "KUDU",
+      "components": [
+        {
+          "name": "KUDU_MASTER",
+          "groups": ["master"]
+        },
+        {
+          "name": "KUDU_TSERVER",
+          "groups": ["master", "worker"]
+        }
+      ]
+    }
+  ]
+}

@@ -162,4 +162,17 @@ public class CmTemplateProcessor implements ClusterDefinitionTextProcessor {
     public void setCdhVersion(String cdhVersion) {
         cmTemplate.setCdhVersion(cdhVersion);
     }
+
+    public void setDisplayName(String displayName) {
+        cmTemplate.setDisplayName(displayName);
+    }
+
+    public void setHostTemplates(List<ApiClusterTemplateHostTemplate> hostTemplates) {
+        cmTemplate.setHostTemplates(hostTemplates);
+    }
+
+    public void setServices(List<ApiClusterTemplateService> services) {
+        cmTemplate.setServices(services);
+    }
+
 }

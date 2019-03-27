@@ -14,9 +14,13 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.Clu
 import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.ClusterDefinitionV4Responses;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.ClusterDefinitionV4ViewResponse;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.ClusterDefinitionV4ViewResponses;
+import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.GeneratedClusterTemplateV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.RecommendationV4Response;
+import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.ServiceDependencyMatrixV4Response;
+import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.SupportedVersionsV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.ParametersQueryV4Response;
 import com.sequenceiq.cloudbreak.api.util.ConverterUtil;
+import com.sequenceiq.cloudbreak.cmtemplate.ClusterTemplateGeneratorService;
 import com.sequenceiq.cloudbreak.common.type.ResourceEvent;
 import com.sequenceiq.cloudbreak.domain.ClusterDefinition;
 import com.sequenceiq.cloudbreak.domain.view.ClusterDefinitionView;
@@ -34,6 +38,9 @@ public class ClusterDefinitionV4Controller extends NotificationController implem
 
     @Inject
     private PlatformParameterService platformParameterService;
+
+    @Inject
+    private ClusterTemplateGeneratorService clusterTemplateGeneratorService;
 
     @Inject
     private ConverterUtil converterUtil;
@@ -90,6 +97,25 @@ public class ClusterDefinitionV4Controller extends NotificationController implem
             String region, String platformVariant, String availabilityZone) {
         return converterUtil.convert(platformParameterService.getRecommendation(workspaceId, clusterDefinitionName,
                 credentialName, region, platformVariant, availabilityZone), RecommendationV4Response.class);
+    }
+
+    @Override
+    public ServiceDependencyMatrixV4Response getServiceAndDependencies(Long workspaceId, Set<String> services,
+        String platform) {
+        return converterUtil.convert(clusterTemplateGeneratorService.getServicesAndDependencies(services, platform),
+                ServiceDependencyMatrixV4Response.class);
+    }
+
+    @Override
+    public SupportedVersionsV4Response getServiceList(Long workspaceId) {
+        return converterUtil.convert(clusterTemplateGeneratorService.getVersionsAndSupportedServiceList(),
+                SupportedVersionsV4Response.class);
+    }
+
+    @Override
+    public GeneratedClusterTemplateV4Response getGeneratedTemplate(Long workspaceId, Set<String> services, String platform) {
+        return converterUtil.convert(clusterTemplateGeneratorService.generateTemplateByServices(services, platform),
+                GeneratedClusterTemplateV4Response.class);
     }
 
 }

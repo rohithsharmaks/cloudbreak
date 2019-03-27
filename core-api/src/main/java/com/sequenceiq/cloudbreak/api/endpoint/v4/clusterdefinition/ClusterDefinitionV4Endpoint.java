@@ -20,7 +20,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.requests.Clus
 import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.ClusterDefinitionV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.ClusterDefinitionV4Responses;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.ClusterDefinitionV4ViewResponses;
+import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.GeneratedClusterTemplateV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.RecommendationV4Response;
+import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.ServiceDependencyMatrixV4Response;
+import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.SupportedVersionsV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.ParametersQueryV4Response;
 import com.sequenceiq.cloudbreak.doc.ControllerDescription;
 import com.sequenceiq.cloudbreak.doc.Notes;
@@ -94,5 +97,29 @@ public interface ClusterDefinitionV4Endpoint {
             @QueryParam("clusterDefinitionName") String clusterDefinitionName, @QueryParam("credentialName") String credentialName,
             @QueryParam("region") String region, @QueryParam("platformVariant") String platformVariant,
             @QueryParam("availabilityZone") String availabilityZone);
+
+    @GET
+    @Path("service-dependencies")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = ConnectorOpDescription.GET_RECOMMENDATION, produces = JSON, notes = Notes.CONNECTOR_NOTES,
+            nickname = "getServiceAndDependencies")
+    ServiceDependencyMatrixV4Response getServiceAndDependencies(@PathParam("workspaceId") Long workspaceId,
+        @QueryParam("services") Set<String> services,
+        @QueryParam("platform") String platform);
+
+    @GET
+    @Path("services")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = ConnectorOpDescription.GET_RECOMMENDATION, produces = JSON, notes = Notes.CONNECTOR_NOTES,
+            nickname = "getServiceList")
+    SupportedVersionsV4Response getServiceList(@PathParam("workspaceId") Long workspaceId);
+
+    @GET
+    @Path("generate")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = ConnectorOpDescription.GET_RECOMMENDATION, produces = JSON, notes = Notes.CONNECTOR_NOTES,
+            nickname = "getGeneratedTemplate")
+    GeneratedClusterTemplateV4Response getGeneratedTemplate(@PathParam("workspaceId") Long workspaceId,
+        @QueryParam("services") Set<String> services, @QueryParam("platform") String platform);
 
 }

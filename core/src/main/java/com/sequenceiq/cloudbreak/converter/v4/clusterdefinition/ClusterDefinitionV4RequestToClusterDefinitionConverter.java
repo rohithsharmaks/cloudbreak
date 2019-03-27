@@ -16,6 +16,8 @@ import com.google.common.base.Strings;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.requests.ClusterDefinitionV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.common.ResourceStatus;
 import com.sequenceiq.cloudbreak.clusterdefinition.utils.ClusterDefinitionUtils;
+import com.sequenceiq.cloudbreak.cmtemplate.ClusterTemplateGeneratorService;
+import com.sequenceiq.cloudbreak.cmtemplate.generator.template.domain.GeneratedClusterTemplate;
 import com.sequenceiq.cloudbreak.common.type.APIResourceType;
 import com.sequenceiq.cloudbreak.controller.exception.BadRequestException;
 import com.sequenceiq.cloudbreak.converter.AbstractConversionServiceAwareConverter;
@@ -42,6 +44,9 @@ public class ClusterDefinitionV4RequestToClusterDefinitionConverter
     @Inject
     private MissingResourceNameGenerator missingResourceNameGenerator;
 
+    @Inject
+    private ClusterTemplateGeneratorService clusterTemplateGeneratorService;
+
     @Override
     public ClusterDefinition convert(ClusterDefinitionV4Request json) {
         ClusterDefinition clusterDefinition = new ClusterDefinition();
@@ -54,6 +59,10 @@ public class ClusterDefinitionV4RequestToClusterDefinitionConverter
             } catch (IOException | CloudbreakApiException e) {
                 throw new BadRequestException(String.format("Cannot download ambari validation from: %s", sourceUrl), e);
             }
+        } else if (!json.getServices().isEmpty() && !Strings.isNullOrEmpty(json.getPlatform())) {
+            GeneratedClusterTemplate generatedClusterTemplate =
+                    clusterTemplateGeneratorService.generateTemplateByServices(json.getServices(), json.getPlatform());
+            clusterDefinition.setClusterDefinitionText(generatedClusterTemplate.getTemplate());
         } else {
             clusterDefinition.setClusterDefinitionText(json.getClusterDefinition());
         }
