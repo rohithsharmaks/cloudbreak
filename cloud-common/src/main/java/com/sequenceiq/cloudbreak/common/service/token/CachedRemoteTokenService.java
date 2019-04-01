@@ -75,8 +75,12 @@ public class CachedRemoteTokenService implements ResourceServerTokenServices {
     @Override
     @Cacheable(cacheNames = "tokenCache", key = "#accessToken")
     public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException, InvalidTokenException {
-        if (umsClient.isConfigured()) {
-            return getUmsAuthentication(accessToken);
+        if (umsClient.isConfigured() && Crn.isValidCrn(accessToken)) {
+            try {
+                return getUmsAuthentication(accessToken);
+            } catch (Exception e) {
+                throw new InvalidTokenException("Invalid CRN provided", e);
+            }
         }
         Jwt jwtToken;
         try {

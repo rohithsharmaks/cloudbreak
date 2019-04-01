@@ -28,4 +28,12 @@ public class Crn {
         return parts[4];
     }
     //CHECKSTYLE:ON
+
+
+    public static boolean isValidCrn(String crn) {
+        if(Strings.isNullOrEmpty(crn)){
+            return false;
+        }
+        return crn.split(":").length > 4;
+    }
 }

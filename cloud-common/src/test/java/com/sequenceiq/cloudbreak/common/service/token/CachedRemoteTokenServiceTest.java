@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -30,6 +31,8 @@ public class CachedRemoteTokenServiceTest {
 
     private final String token;
 
+    private final String crn = "crn:altus:iam:us-west-1:9d74eee4-cad1-45d7-b645-7ccf9edbb73d:user:f3b8abcde-e712-4f89-1234-be07183720d3";
+
     @Mock
     private IdentityClient identityClient;
 
@@ -50,6 +53,18 @@ public class CachedRemoteTokenServiceTest {
         CachedRemoteTokenService tokenService = new CachedRemoteTokenService("clientId", "clientSecret",
                 "http://localhost:8089", umsClient, caasClient, identityClient);
         tokenService.loadAuthentication(token);
+    }
+
+    @Test
+    @Ignore
+    public void testCrnBasedAuth() {
+        when(umsClient.isConfigured()).thenReturn(true);
+        when(umsClient.getUserDetails(anyString(), anyString())).thenThrow(new NullPointerException());
+        thrown.expect(InvalidTokenException.class);
+        thrown.expectMessage("No 'tenant_name' claim in token");
+        CachedRemoteTokenService tokenService = new CachedRemoteTokenService("clientId", "clientSecret",
+                "http://localhost:8089", umsClient, caasClient, identityClient);
+        tokenService.loadAuthentication(crn);
     }
 
     @Test
