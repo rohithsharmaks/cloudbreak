@@ -7,12 +7,9 @@
     "HBASE",
     "YARN",
     "SPARK_ON_YARN",
-    "ISILON",
     "IMPALA",
     "KAFKA",
     "FLUME",
-    "SENTRY",
-    "SPARK",
     "SOLR",
     "SQOOP"
   ],

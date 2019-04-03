@@ -11,13 +11,11 @@
         },
         {
           "name": "OOZIE_SERVER",
-          "groups": ["master"],
+          "groups": ["master", "worker"],
           "base": true
         }
       ],
-      "dependencies": [
-        "HDFS"
-      ]
+      "dependencies": ["ZOOKEEPER","HDFS", "YARN"]
     },
     {
       "name": "HDFS",
@@ -25,7 +23,33 @@
       "components": [
         {
           "name": "BALANCER",
-          "groups": ["master"]
+          "groups": ["master"],
+          "base" : true
+        },
+        {
+          "name": "GATEWAY",
+          "groups": ["master"],
+          "base" : true
+        },
+        {
+          "name": "JOURNALNODE",
+          "groups": ["master", "worker"],
+          "base" : true
+        },
+        {
+          "name": "FAILOVERCONTROLLER",
+          "groups": ["master", "worker"],
+          "base" : true
+        },
+        {
+          "name": "HTTPFS",
+          "groups": ["master"],
+          "base" : true
+        },
+        {
+          "name": "NFSGATEWAY",
+          "groups": ["master"],
+          "base" : true
         },
         {
           "name": "NAMENODE",
@@ -33,13 +57,15 @@
         },
         {
           "name": "SECONDARYNAMENODE",
-          "groups": ["master"]
+          "groups": ["worker"]
         },
         {
           "name": "DATANODE",
-          "groups": ["compute"]
+          "groups": ["worker"],
+          "base" : true
         }
-      ]
+      ],
+      "dependencies": ["ZOOKEEPER"]
     },
     {
       "name": "HIVE",
@@ -47,17 +73,21 @@
       "components": [
         {
           "name": "HIVEMETASTORE",
-          "groups": ["master"]
+          "groups": ["master", "worker"],
+          "base" : true
         },
         {
           "name": "HIVESERVER2",
-          "groups": ["master"]
+          "groups": ["master", "worker"],
+          "base" : true
         },
         {
           "name": "GATEWAY",
-          "groups": ["master", "worker", "compute"]
+          "groups": ["master", "worker", "compute"],
+          "base" : true
         }
-      ]
+      ],
+      "dependencies": ["ZOOKEEPER", "HDFS", "YARN"]
     },
     {
       "name": "ZOOKEEPER",
@@ -65,7 +95,8 @@
       "components": [
         {
           "name": "SERVER",
-          "groups": ["master"]
+          "groups": ["master"],
+          "base" : true
         }
       ]
     },
@@ -74,14 +105,27 @@
       "displayName": "HBase",
       "components": [
         {
+          "name": "GATEWAY",
+          "groups": ["master"],
+          "base" : true
+        },
+        {
           "name": "MASTER",
-          "groups": ["master"]
+          "groups": ["master"],
+          "base" : true
         },
         {
           "name": "REGIONSERVER",
-          "groups": ["worker"]
+          "groups": ["worker", "compute"],
+          "base" : true
+        },
+        {
+          "name": "HBASETHRIFTSERVER",
+          "groups": ["worker", "compute"],
+          "base" : true
         }
-      ]
+      ],
+      "dependencies": ["ZOOKEEPER", "HDFS"]
     },
     {
       "name": "YARN",
@@ -89,31 +133,42 @@
       "components": [
         {
           "name": "JOBHISTORY",
-          "groups": ["master"]
+          "groups": ["master"],
+          "base" : true
         },
         {
           "name": "RESOURCEMANAGER",
           "groups": ["master"]
         },
         {
+          "name": "GATEWAY",
+          "groups": ["master"],
+          "base" : true
+        },
+        {
           "name": "NODEMANAGER",
-          "groups": ["worker", "compute"]
+          "groups": ["worker", "compute"],
+          "base" : true
         }
-      ]
+      ],
+      "dependencies": ["ZOOKEEPER", "HDFS"]
     },
     {
       "name": "SPARK_ON_YARN",
-      "displayName": "Spark On Yarn",
+      "displayName": "Spark",
       "components": [
         {
           "name": "GATEWAY",
-          "groups": ["master", "worker", "compute"]
+          "groups": ["master", "worker", "compute"],
+          "base" : true
         },
         {
           "name": "SPARK_YARN_HISTORY_SERVER",
-          "groups": ["master"]
+          "groups": ["master"],
+          "base" : true
         }
-      ]
+      ],
+      "dependencies": ["ZOOKEEPER", "HDFS", "YARN", "HBASE"]
     },
     {
       "name": "IMPALA",
@@ -121,17 +176,21 @@
       "components": [
         {
           "name": "CATALOGSERVER",
-          "groups": ["master"]
+          "groups": ["master"],
+          "base" : true
         },
         {
           "name": "STATESTORE",
-          "groups": ["master"]
+          "groups": ["master"],
+          "base" : true
         },
         {
           "name": "IMPALAD",
-          "groups": ["worker"]
+          "groups": ["worker", "compute"],
+          "base" : true
         }
-      ]
+      ],
+      "dependencies": ["ZOOKEEPER", "HDFS", "KUDU"]
     },
     {
       "name": "KAFKA",
@@ -139,27 +198,16 @@
       "components": [
         {
           "name": "KAFKA_BROKER",
-          "groups": ["master"]
-        }
-      ]
-    },
-    {
-      "name": "ISILON",
-      "displayName": "Isilon",
-      "components": [
+          "groups": ["master", "worker"],
+          "base": true
+        },
         {
           "name": "GATEWAY",
-          "groups": ["master", "worker", "compute"]
+          "groups": ["worker", "compute"],
+          "base": true
         }
-      ]
-    },
-    {
-      "name": "SENTRY",
-      "displayName": "Sentry"
-    },
-    {
-      "name": "SPARK",
-      "displayName": "Spark"
+      ],
+      "dependencies": ["ZOOKEEPER"]
     },
     {
       "name": "SOLR",
@@ -171,13 +219,23 @@
         },
         {
           "name": "SOLR_SERVER",
-          "groups": ["master"]
+          "groups": ["master"],
+          "base": true
         }
-      ]
+      ],
+      "dependencies": ["ZOOKEEPER"]
     },
     {
       "name": "SQOOP",
-      "displayName": "Sqoop"
+      "displayName": "Sqoop",
+      "components": [
+        {
+          "name": "SQOOP_CLIENT",
+          "groups": ["master", "worker", "compute"],
+          "base": true
+        }
+      ],
+      "dependencies": ["ZOOKEEPER", "HDFS"]
     },
     {
       "name": "KUDU",
@@ -185,13 +243,28 @@
       "components": [
         {
           "name": "KUDU_MASTER",
-          "groups": ["master"]
+          "groups": ["master"],
+          "base": true
         },
         {
           "name": "KUDU_TSERVER",
-          "groups": ["master", "worker"]
+          "groups": ["worker", "compute"],
+          "base": true
         }
-      ]
+      ],
+      "dependencies": ["ZOOKEEPER", "HDFS"]
+    },
+    {
+      "name": "FLUME",
+      "displayName": "FLUME",
+      "components": [
+        {
+          "name": "AGENT",
+          "groups": ["master", "worker", "compute"],
+          "base": true
+        }
+      ],
+      "dependencies": ["ZOOKEEPER", "HDFS", "HBASE", "KAFKA", "SOLR"]
     }
   ]
 }
