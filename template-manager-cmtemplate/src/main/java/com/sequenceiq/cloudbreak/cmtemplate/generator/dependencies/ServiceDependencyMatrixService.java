@@ -33,9 +33,7 @@ public class ServiceDependencyMatrixService {
             for (ServiceConfig serviceInformation : resolver.serviceInformations()) {
                 if (service.toUpperCase().equals(serviceInformation.getName())) {
                     for (String dependency : serviceInformation.getDependencies()) {
-                        if (!services.contains(dependency.toUpperCase())) {
-                            deps.add(dependency.toUpperCase());
-                        }
+                        deps.add(dependency.toUpperCase());
                     }
                     break;
                 }

@@ -1,24 +1,27 @@
 package com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class ServiceDependencyMatrixV4Response {
 
-    private DependenciesV4Responses dependencies;
+    private Set<String> dependencies = new HashSet<>();
 
-    private ServicesV4Responses services;
+    private Set<String> services = new HashSet<>();
 
-    public DependenciesV4Responses getDependencies() {
+    public Set<String> getDependencies() {
         return dependencies;
     }
 
-    public void setDependencies(DependenciesV4Responses dependencies) {
+    public void setDependencies(Set<String> dependencies) {
         this.dependencies = dependencies;
     }
 
-    public ServicesV4Responses getServices() {
+    public Set<String> getServices() {
         return services;
     }
 
-    public void setServices(ServicesV4Responses services) {
+    public void setServices(Set<String> services) {
         this.services = services;
     }
 }
