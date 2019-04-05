@@ -12,10 +12,10 @@ import javax.validation.Payload;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = CredentialV4BaseValidator.class)
-public @interface ValidCredentialV4Base {
+@Constraint(validatedBy = CloudStorageV4RequestValidator.class)
+public @interface ValidCloudStorageV4Request {
 
-    String message() default "CredentialV4Request contains one or more invalid data.";
+    String message() default "CloudStorageV4Request contains one or more invalid data.";
 
     Class<?>[] groups() default {};
 
