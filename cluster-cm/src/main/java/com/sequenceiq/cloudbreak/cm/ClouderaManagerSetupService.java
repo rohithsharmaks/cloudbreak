@@ -1,12 +1,16 @@
 package com.sequenceiq.cloudbreak.cm;
 
+import static com.sequenceiq.cloudbreak.api.endpoint.v4.database.base.DatabaseType.CLOUDERA_MANAGER_MANAGEMENT_SERVICE;
+import static com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.base.InstanceMetadataType.GATEWAY_PRIMARY;
 import static com.sequenceiq.cloudbreak.polling.PollingResult.isExited;
 import static com.sequenceiq.cloudbreak.polling.PollingResult.isSuccess;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -17,12 +21,16 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.cloudera.api.swagger.ClouderaManagerResourceApi;
+import com.cloudera.api.swagger.MgmtServiceResourceApi;
 import com.cloudera.api.swagger.client.ApiClient;
 import com.cloudera.api.swagger.client.ApiException;
 import com.cloudera.api.swagger.model.ApiClusterTemplate;
 import com.cloudera.api.swagger.model.ApiCommand;
 import com.cloudera.api.swagger.model.ApiConfig;
 import com.cloudera.api.swagger.model.ApiConfigList;
+import com.cloudera.api.swagger.model.ApiHostRef;
+import com.cloudera.api.swagger.model.ApiRole;
+import com.cloudera.api.swagger.model.ApiService;
 import com.sequenceiq.cloudbreak.client.HttpClientConfig;
 import com.sequenceiq.cloudbreak.cloud.model.ClouderaManagerProduct;
 import com.sequenceiq.cloudbreak.cloud.model.ClouderaManagerRepo;
@@ -33,6 +41,7 @@ import com.sequenceiq.cloudbreak.cm.client.ClouderaManagerClientFactory;
 import com.sequenceiq.cloudbreak.cm.polling.ClouderaManagerPollingServiceProvider;
 import com.sequenceiq.cloudbreak.cmtemplate.CMRepositoryVersionUtil;
 import com.sequenceiq.cloudbreak.cmtemplate.CentralCmTemplateUpdater;
+import com.sequenceiq.cloudbreak.domain.RDSConfig;
 import com.sequenceiq.cloudbreak.domain.stack.Stack;
 import com.sequenceiq.cloudbreak.domain.stack.cluster.Cluster;
 import com.sequenceiq.cloudbreak.domain.stack.cluster.host.HostGroup;
@@ -125,6 +134,44 @@ public class ClouderaManagerSetupService implements ClusterSetupService {
             LOGGER.debug("Cloudera cluster template has been submitted, cluster install is in progress");
 
             clouderaManagerPollingServiceProvider.templateInstallCheckerService(stack, client, apiCommand.getId());
+
+            Optional<RDSConfig> mgmtRdsConfigOpt = templatePreparationObject.getRdsConfigs().stream()
+                    .filter(rds -> CLOUDERA_MANAGER_MANAGEMENT_SERVICE.name().equals(rds.getType())).findFirst();
+            if (mgmtRdsConfigOpt.isPresent()) {
+                String cmServerFQDN = null;
+                for (List<InstanceMetaData> instanceMetaData : instanceMetaDataByHostGroup.values()) {
+                    if (cmServerFQDN == null) {
+                        Optional<InstanceMetaData> cmServerOpt = instanceMetaData.stream()
+                                .filter(im -> GATEWAY_PRIMARY.equals(im.getInstanceMetadataType())).findFirst();
+                        if (cmServerOpt.isPresent()) {
+                            cmServerFQDN = cmServerOpt.get().getDiscoveryFQDN();
+                        }
+                    }
+                }
+
+                MgmtServiceResourceApi mgmtServiceResourceApi = clouderaManagerClientFactory.getMgmtServiceResourceApi(client);
+                ApiService mgmtService = new ApiService();
+                ApiHostRef cmServerHostRef = new ApiHostRef().hostname(cmServerFQDN);
+                List<String> mgmtRoleNames = List.of("SERVICEMONITOR", "ACTIVITYMONITOR", "HOSTMONITOR", "REPORTSMANAGER",
+                        "EVENTSERVER", "ALERTPUBLISHER", "NAVIGATOR", "NAVIGATORMETASERVER");
+                List<ApiRole> roles = mgmtRoleNames.stream()
+                        .map(role -> new ApiRole().type(role).name(role + "-BASE").hostRef(cmServerHostRef)).collect(Collectors.toList());
+                mgmtService.setRoles(roles);
+                mgmtServiceResourceApi.setupCMS(mgmtService);
+
+//                List<ApiRole> roles = List.of(
+//                        new ApiRole().type("SERVICEMONITOR").name("SERVICEMONITOR-BASE").hostRef(cmServerHostRef),
+//                        new ApiRole().type("ACTIVITYMONITOR").name("ACTIVITYMONITOR-BASE").hostRef(cmServerHostRef),
+//                        new ApiRole().type("HOSTMONITOR").name("HOSTMONITOR-BASE").hostRef(cmServerHostRef),
+//                        new ApiRole().type("REPORTSMANAGER").name("REPORTSMANAGER-BASE").hostRef(cmServerHostRef),
+//                        new ApiRole().type("EVENTSERVER").name("EVENTSERVER-BASE").hostRef(cmServerHostRef),
+//                        new ApiRole().type("ALERTPUBLISHER").name("ALERTPUBLISHER-BASE").hostRef(cmServerHostRef),
+//                        new ApiRole().type("NAVIGATOR").name("NAVIGATOR-BASE").hostRef(cmServerHostRef),
+//                        new ApiRole().type("NAVIGATORMETASERVER").name("NAVIGATORMETASERVER-BASE").hostRef(cmServerHostRef),
+//                        );
+
+            }
+
             if (!CMRepositoryVersionUtil.isEnableKerberosSupportedViaClusterDefinition(clouderaManagerRepoDetails)) {
                 kerberosService.configureKerberosViaApi(client, clientConfig, stack, clouderaManagerRepoDetails);
             }
@@ -140,7 +187,7 @@ public class ClouderaManagerSetupService implements ClusterSetupService {
     private void removeRemoteParcelRepos(ClouderaManagerResourceApi clouderaManagerResourceApi) {
         try {
             ApiConfigList apiConfigList = new ApiConfigList()
-                .addItemsItem(new ApiConfig().name("remote_parcel_repo_urls").value(""));
+                    .addItemsItem(new ApiConfig().name("remote_parcel_repo_urls").value(""));
             clouderaManagerResourceApi.updateConfig("Updated configurations.", apiConfigList);
         } catch (ApiException e) {
             LOGGER.info("Error while updating remote parcel repos. Message {}, throwable: {}", e.getMessage(), e);
