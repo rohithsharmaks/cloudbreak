@@ -37,3 +37,6 @@ build-autoscale-dockerhub:
 
 build-datalake-dockerhub:
 	 make -C docker-datalake dockerhub
+
+build-rdb-dockerhub:
+	 make -C docker-rdb dockerhub
