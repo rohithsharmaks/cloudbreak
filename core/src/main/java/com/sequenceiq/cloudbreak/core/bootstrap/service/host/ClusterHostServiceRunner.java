@@ -217,6 +217,10 @@ public class ClusterHostServiceRunner {
         servicePillar.put("discovery", new SaltPillarProperties("/discovery/init.sls", singletonMap("platform", stack.cloudPlatform())));
         servicePillar.put("metadata", new SaltPillarProperties("/metadata/init.sls",
                 singletonMap("cluster", singletonMap("name", stack.getCluster().getName()))));
+        if (cluster.getKerberosConfig() == null && stack.isDatalake()) {
+            servicePillar.put("freeipa_server", new SaltPillarProperties("/freeipa/init.sls",
+                    singletonMap("freeipa", singletonMap("password", cluster.getPassword()))));
+        }
         ClusterPreCreationApi connector = clusterApiConnectors.getConnector(cluster);
         saveGatewayPillar(primaryGatewayConfig, cluster, servicePillar, connector);
 

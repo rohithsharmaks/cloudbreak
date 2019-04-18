@@ -264,6 +264,7 @@ public class SaltOrchestrator implements HostOrchestrator {
 
             setAdMemberRoleIfNeeded(allNodes, saltConfig, exitModel, sc, allNodeIP);
             setIpaMemberRoleIfNeeded(allNodes, saltConfig, exitModel, sc, allNodeIP);
+            setIpaServerRoleIfNeeded(server, allNodes, saltConfig, exitModel, sc);
 
             // knox
             if (!clouderaManager && primaryGateway.getKnoxGatewayEnabled()) {
@@ -292,6 +293,13 @@ public class SaltOrchestrator implements HostOrchestrator {
         } catch (Exception e) {
             LOGGER.warn("Error occurred during ambari bootstrap", e);
             throw new CloudbreakOrchestratorFailedException(e);
+        }
+    }
+
+    private void setIpaServerRoleIfNeeded(Set<String> server, Set<Node> allNode, SaltConfig saltConfig, ExitCriteriaModel exitModel, SaltConnector sc)
+            throws ExecutionException, InterruptedException {
+        if (saltConfig.getServicePillarConfig().containsKey("freeipa_server")) {
+            runSaltCommand(sc, new GrainAddRunner(server, allNode, "freeipa_server"), exitModel);
         }
     }
 

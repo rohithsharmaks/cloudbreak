@@ -9,6 +9,7 @@ import static com.sequenceiq.cloudbreak.core.flow2.stack.downscale.StackDownscal
 import static com.sequenceiq.cloudbreak.core.flow2.stack.repair.ManualStackRepairTriggerEvent.MANUAL_STACK_REPAIR_TRIGGER_EVENT;
 import static com.sequenceiq.cloudbreak.core.flow2.stack.stop.StackStopEvent.STACK_STOP_EVENT;
 import static com.sequenceiq.cloudbreak.core.flow2.stack.sync.StackSyncEvent.STACK_SYNC_EVENT;
+import static com.sequenceiq.freeipa.flow.chain.FlowChainTriggers.FREEIPA_PROVISION_TRIGGER_EVENT;
 
 import java.util.Collections;
 import java.util.List;
@@ -85,6 +86,11 @@ public class ReactorFlowManager {
 
     @Inject
     private StackService stackService;
+
+    public void triggerFreeIpaProvisioning(Long stackId) {
+        String selector = FREEIPA_PROVISION_TRIGGER_EVENT;
+        notify(selector, new StackEvent(selector, stackId));
+    }
 
     public void triggerProvisioning(Long stackId) {
         String selector = FlowChainTriggers.FULL_PROVISION_TRIGGER_EVENT;

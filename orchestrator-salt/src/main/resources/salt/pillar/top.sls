@@ -1,4 +1,7 @@
 base:
+  'G@roles:freeipa_server':
+    - freeipa
+
   'G@roles:ambari_server or G@roles:ambari_agent':
     - match: compound
     - ambari.config

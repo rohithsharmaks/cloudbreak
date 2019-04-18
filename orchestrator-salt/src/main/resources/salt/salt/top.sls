@@ -7,6 +7,9 @@ base:
     - docker
     - recipes.runner
 
+  'G@roles:freeipa_server':
+    - freeipa
+
   'G@roles:manager_server':
     - postgresql
     - cloudera.repo
