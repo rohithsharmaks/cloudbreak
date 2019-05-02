@@ -53,6 +53,11 @@ integrationtest:
         imageId: 1580eb06-e175-4d06-675a-c484b2c634f3
         blueprints:
           - "HDP 3.1 - Data Science: Apache Spark 2, Apache Zeppelin"
+    prewarmedimage:
+      amazonlinux2:
+        imageId: 4099d61d-2503-49cc-6673-68cd2e54aa85
+        clusterDefinitions:
+        - "HDP 3.1 - EDW-Analytics: Apache Hive 2 LLAP, Apache Zeppelin"
 
   # azure parameters
   azure:

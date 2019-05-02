@@ -29,6 +29,8 @@ public class AwsProperties {
 
     private final Baseimage baseimage = new Baseimage();
 
+    private final Baseimage prewarmedimage = new Baseimage();
+
     public String getAvailabilityZone() {
         return availabilityZone;
     }
@@ -95,6 +97,10 @@ public class AwsProperties {
 
     public Baseimage getBaseimage() {
         return baseimage;
+    }
+
+    public Baseimage getPrewarmedimage() {
+        return prewarmedimage;
     }
 
     public static class Instance {
