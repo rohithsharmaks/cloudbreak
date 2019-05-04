@@ -76,7 +76,7 @@ public class ClouderaManagerClusterDecomissionService implements ClusterDecomiss
     }
 
     @Override
-    public boolean deleteHostFromCluster(HostMetadata data) {
-        return clouderaManagerDecomissioner.deleteHost(stack, data, client);
+    public void deleteHostFromCluster(HostMetadata data) {
+        clouderaManagerDecomissioner.deleteHost(stack, data, client);
     }
 }

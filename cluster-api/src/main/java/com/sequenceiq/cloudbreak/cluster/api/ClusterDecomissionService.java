@@ -25,5 +25,5 @@ public interface ClusterDecomissionService {
 
     void removeManagementServices();
 
-    boolean deleteHostFromCluster(HostMetadata data);
+    void deleteHostFromCluster(HostMetadata data);
 }

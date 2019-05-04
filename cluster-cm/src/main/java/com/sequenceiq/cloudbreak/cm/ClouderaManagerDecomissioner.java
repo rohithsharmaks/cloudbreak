@@ -141,24 +141,19 @@ public class ClouderaManagerDecomissioner {
             LOGGER.debug("Decommissioning nodes: [{}]", stillAvailableRemovableHosts);
             ClouderaManagerResourceApi apiInstance = new ClouderaManagerResourceApi(client);
             ApiHostNameList body = new ApiHostNameList().items(stillAvailableRemovableHosts);
-            try {
-                ApiCommand apiCommand = apiInstance.hostsDecommissionCommand(body);
-                PollingResult pollingResult = clouderaManagerPollingServiceProvider.decommissionHostPollingService(stack, client, apiCommand.getId());
-                if (isExited(pollingResult)) {
-                    throw new CancellationException("Cluster was terminated while waiting for host decommission");
-                } else if (isTimeout(pollingResult)) {
-                    throw new CloudbreakServiceException("Timeout while Cloudera Manager decommissioned host.");
-                }
-
-                Set<HostMetadata> decommissionedHosts = stillAvailableRemovableHosts.stream()
-                        .map(hostsToRemove::get)
-                        .collect(Collectors.toSet());
-
-                return decommissionedHosts;
-            } catch (ApiException e) {
-                LOGGER.error("Failed to decommission hosts: {}", stillAvailableRemovableHosts, e);
-                throw new CloudbreakServiceException(e.getMessage(), e);
+            ApiCommand apiCommand = apiInstance.hostsDecommissionCommand(body);
+            PollingResult pollingResult = clouderaManagerPollingServiceProvider.decommissionHostPollingService(stack, client, apiCommand.getId());
+            if (isExited(pollingResult)) {
+                throw new CancellationException("Cluster was terminated while waiting for host decommission");
+            } else if (isTimeout(pollingResult)) {
+                throw new CloudbreakServiceException("Timeout while Cloudera Manager decommissioned host.");
             }
+
+            Set<HostMetadata> decommissionedHosts = stillAvailableRemovableHosts.stream()
+                    .map(hostsToRemove::get)
+                    .collect(Collectors.toSet());
+
+            return decommissionedHosts;
         } catch (ApiException e) {
             LOGGER.error("Failed to decommission hosts: {}", hostsToRemove.keySet(), e);
             throw new CloudbreakServiceException(e.getMessage(), e);
@@ -211,27 +206,26 @@ public class ClouderaManagerDecomissioner {
         };
     }
 
-    public boolean deleteHost(Stack stack, HostMetadata data, ApiClient client) {
+    public void deleteHost(Stack stack, HostMetadata data, ApiClient client) {
         LOGGER.debug("Deleting host: [{}]", data.getHostName());
         deleteRolesFromHost(stack, data, client);
-        boolean hostDeleted = deleteHostFromClouderaManager(stack, data, client);
+        deleteHostFromClouderaManager(stack, data, client);
         deleteUnusedCredentialsFromCluster(stack, data, client);
-        return hostDeleted;
     }
 
     private void deleteUnusedCredentialsFromCluster(Stack stack, HostMetadata data, ApiClient client) {
         LOGGER.debug("Deleting unused credentials");
-        ClustersResourceApi clustersResourceApi = new ClustersResourceApi(client);
+        ClouderaManagerResourceApi clouderaManagerResourceApi = new ClouderaManagerResourceApi(client);
         try {
-            clouderaManagerPollingServiceProvider.deleteUnusuedCredentialsPollingService(stack, client,
-                    clustersResourceApi.deleteClusterCredentialsCommand(stack.getCluster().getName()).getId());
+            ApiCommand command = clouderaManagerResourceApi.deleteCredentialsCommand("unused");
+            clouderaManagerPollingServiceProvider.kerberosConfigurePollingService(stack, client, command.getId());
         } catch (ApiException e) {
             LOGGER.error("Failed to delete credentials of host: {}", data.getHostName(), e);
             throw new CloudbreakServiceException(e.getMessage(), e);
         }
     }
 
-    private boolean deleteHostFromClouderaManager(Stack stack, HostMetadata data, ApiClient client) {
+    private void deleteHostFromClouderaManager(Stack stack, HostMetadata data, ApiClient client) {
         ClustersResourceApi clustersResourceApi = new ClustersResourceApi(client);
         try {
             ApiHostRefList hostRefList = clustersResourceApi.listHosts(stack.getName());
@@ -246,13 +240,11 @@ public class ClouderaManagerDecomissioner {
                 LOGGER.debug("Host remove request sent. Host id: [{}]", hostRef.getHostId());
             } else {
                 LOGGER.debug("Host already deleted.");
-                return false;
             }
         } catch (ApiException e) {
             LOGGER.error("Failed to delete host: {}", data.getHostName(), e);
             throw new CloudbreakServiceException(e.getMessage(), e);
         }
-        return true;
     }
 
     private void deleteRolesFromHost(Stack stack, HostMetadata data, ApiClient client) {
@@ -276,27 +268,12 @@ public class ClouderaManagerDecomissioner {
 
     public void stopAndRemoveMgmtService(Stack stack, ApiClient client) {
         MgmtServiceResourceApi mgmtServiceResourceApi = new MgmtServiceResourceApi(client);
-
         try {
             clouderaManagerPollingServiceProvider.stopManagementServicePollingService(stack,
                     client, mgmtServiceResourceApi.stopCommand().getId());
             mgmtServiceResourceApi.deleteCMS();
-            deleteUnusedCredentialsFromCm(stack, client);
         } catch (ApiException e) {
             LOGGER.error("Failed to stop management services.", e);
-            throw new CloudbreakServiceException(e.getMessage(), e);
-        }
-    }
-
-    private void deleteUnusedCredentialsFromCm(Stack stack, ApiClient client) {
-        LOGGER.debug("Deleting unused credentials");
-        ClouderaManagerResourceApi clouderaManagerResourceApi = new ClouderaManagerResourceApi(client);
-        try {
-            clouderaManagerPollingServiceProvider.deleteUnusuedCredentialsPollingService(stack, client,
-                    clouderaManagerResourceApi.deleteCredentialsCommand("unused").getId());
-            clouderaManagerResourceApi.deleteCredentialsCommand("unused");
-        } catch (ApiException e) {
-            LOGGER.error("Failed to delete credentials for CM.", e);
             throw new CloudbreakServiceException(e.getMessage(), e);
         }
     }
