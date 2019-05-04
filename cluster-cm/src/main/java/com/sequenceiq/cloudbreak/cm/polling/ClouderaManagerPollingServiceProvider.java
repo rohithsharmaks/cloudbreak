@@ -12,6 +12,7 @@ import com.cloudera.api.swagger.client.ApiClient;
 import com.sequenceiq.cloudbreak.cm.polling.task.AbstractClouderaManagerCommandCheckerTask;
 import com.sequenceiq.cloudbreak.cm.polling.task.ClouderaManagerApplyHostTemplateListenerTask;
 import com.sequenceiq.cloudbreak.cm.polling.task.ClouderaManagerDecommissionHostListenerTask;
+import com.sequenceiq.cloudbreak.cm.polling.task.ClouderaManagerDeleteUnusedCredentialsListenerTask;
 import com.sequenceiq.cloudbreak.cm.polling.task.ClouderaManagerDeployClientConfigListenerTask;
 import com.sequenceiq.cloudbreak.cm.polling.task.ClouderaManagerHostStatusChecker;
 import com.sequenceiq.cloudbreak.cm.polling.task.ClouderaManagerKerberosConfigureListenerTask;
@@ -76,6 +77,9 @@ public class ClouderaManagerPollingServiceProvider {
     @Inject
     private ClouderaManagerStartManagementServiceListenerTask startManagementServiceListenerTask;
 
+    @Inject
+    private ClouderaManagerDeleteUnusedCredentialsListenerTask deleteUnusedCredentialsListenerTask;
+
     public PollingResult clouderaManagerStartupPollerObjectPollingService(Stack stack, ApiClient apiClient) {
         LOGGER.debug("Waiting for Cloudera Manager startup. [Server address: {}]", stack.getAmbariIp());
         return pollCMWithListener(stack, apiClient, clouderaManagerStartupListenerTask);
@@ -129,6 +133,16 @@ public class ClouderaManagerPollingServiceProvider {
     public PollingResult startManagementServicePollingService(Stack stack, ApiClient apiClient, BigDecimal commandId) {
         LOGGER.debug("Waiting for Cloudera Manager to start management service. [Server address: {}]", stack.getAmbariIp());
         return pollCommandWithListener(stack, apiClient, commandId, MAX_ATTEMPT, startManagementServiceListenerTask);
+    }
+
+    public PollingResult stopManagementServicePollingService(Stack stack, ApiClient apiClient, BigDecimal commandId) {
+        LOGGER.debug("Waiting for Cloudera Manager to stop management service. [Server address: {}]", stack.getAmbariIp());
+        return pollCommandWithListener(stack, apiClient, commandId, MAX_ATTEMPT, startManagementServiceListenerTask);
+    }
+
+    public PollingResult deleteUnusuedCredentialsPollingService(Stack stack, ApiClient apiClient, BigDecimal commandId) {
+        LOGGER.debug("Waiting for Cloudera Manager to delete unused credentials. [Server address: {}]", stack.getAmbariIp());
+        return pollCommandWithListener(stack, apiClient, commandId, MAX_ATTEMPT, deleteUnusedCredentialsListenerTask);
     }
 
     private PollingResult pollCMWithListener(Stack stack, ApiClient apiClient, StatusCheckerTask<ClouderaManagerPollerObject> listenerTask) {
