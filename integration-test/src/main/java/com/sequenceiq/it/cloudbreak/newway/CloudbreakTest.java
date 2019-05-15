@@ -32,6 +32,8 @@ public class CloudbreakTest extends GherkinTest {
 
     public static final String CLOUDBREAK_SERVER_ROOT = "CLOUDBREAK_SERVER_ROOT";
 
+    public static final String ENVIRONMENT_SERVER_ROOT = "ENVIRONMENT_SERVER_ROOT";
+
     public static final String IDENTITY_URL = "IDENTITY_URL";
 
     public static final String AUTOSCALE_CLIENT_ID = "AUTOSCALE_CLIENTID";
@@ -59,10 +61,16 @@ public class CloudbreakTest extends GherkinTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(CloudbreakTest.class);
 
     @Value("${integrationtest.cloudbreak.server}")
-    private String server;
+    private String cloudbreakServer;
+
+    @Value("${integrationtest.environment.server}")
+    private String environmentServer;
 
     @Value("${server.contextPath:/cb}")
     private String cbRootContextPath;
+
+    @Value("${server.contextPath:/env}")
+    private String envRootContextPath;
 
     @Value("${integrationtest.caas.token}")
     private String refreshToken;
@@ -110,7 +118,7 @@ public class CloudbreakTest extends GherkinTest {
 
         LOGGER.info("CloudbreakTest default values ::: ");
         IntegrationTestContext testContext = getItContext();
-        String[] cloudbreakServerSplit = server.split("://");
+        String[] cloudbreakServerSplit = cloudbreakServer.split("://");
         if (StringUtils.isEmpty(caasProtocol)) {
             caasProtocol = cloudbreakServerSplit[0];
         }
@@ -120,7 +128,8 @@ public class CloudbreakTest extends GherkinTest {
         if (StringUtils.isEmpty(refreshToken)) {
             throw new NullPointerException("INTEGRATIONTEST_CAAS_TOKEN should be set");
         }
-        testContext.putContextParam(CLOUDBREAK_SERVER_ROOT, server + cbRootContextPath);
+        testContext.putContextParam(CLOUDBREAK_SERVER_ROOT, cloudbreakServer + cbRootContextPath);
+        testContext.putContextParam(ENVIRONMENT_SERVER_ROOT, environmentServer + envRootContextPath);
         testContext.putContextParam(CAAS_PROTOCOL, caasProtocol);
         testContext.putContextParam(CAAS_ADDRESS, caasAddress);
         testContext.putContextParam(REFRESH_TOKEN, refreshToken);
@@ -134,7 +143,8 @@ public class CloudbreakTest extends GherkinTest {
         testContext.putContextParam(AUTOSCALE_CLIENT_ID, autoscaleUaaClientId);
         testContext.putContextParam(AUTOSCALE_SECRET, autoscaleUaaClientSecret);
 
-        testParameter.put("INTEGRATIONTEST_CLOUDBREAK_SERVER", server + cbRootContextPath);
+        testParameter.put("INTEGRATIONTEST_CLOUDBREAK_SERVER", cloudbreakServer + cbRootContextPath);
+        testParameter.put("INTEGRATIONTEST_ENVIRONMENT_SERVER", environmentServer + envRootContextPath);
 
         try {
             CloudbreakClient client = CloudbreakClient.created();

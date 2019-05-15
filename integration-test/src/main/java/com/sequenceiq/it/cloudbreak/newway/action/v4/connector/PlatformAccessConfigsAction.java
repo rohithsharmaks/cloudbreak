@@ -4,11 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.connector.PlatformAccessConfigsTestDto;
 
-public class PlatformAccessConfigsAction implements Action<PlatformAccessConfigsTestDto> {
+public class PlatformAccessConfigsAction implements IntegrationTestAction<PlatformAccessConfigsTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformAccessConfigsAction.class);
 

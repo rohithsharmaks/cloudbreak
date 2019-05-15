@@ -6,11 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.proxy.ProxyTestDto;
 
-public class ProxyConfigCreateIfNotExistsAction implements Action<ProxyTestDto> {
+public class ProxyConfigCreateIfNotExistsAction implements IntegrationTestAction<ProxyTestDto> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProxyConfigCreateIfNotExistsAction.class);
 
     @Override

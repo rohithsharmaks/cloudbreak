@@ -10,11 +10,11 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.common.mappable.CloudPlatform;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.imagecatalog.ImageCatalogV4Endpoint;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.imagecatalog.responses.ImagesV4Response;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.imagecatalog.ImageCatalogTestDto;
 
-public class ImageCatalogGetImagesByNameAction implements Action<ImageCatalogTestDto> {
+public class ImageCatalogGetImagesByNameAction implements IntegrationTestAction<ImageCatalogTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageCatalogGetImagesByNameAction.class);
 

@@ -2,7 +2,7 @@ package com.sequenceiq.it.cloudbreak.newway.client;
 
 import org.springframework.stereotype.Service;
 
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.util.CloudStorageMatrixAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.util.DeploymentPreferencesAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.util.RepoConfigValidationAction;
@@ -23,35 +23,35 @@ import com.sequenceiq.it.cloudbreak.newway.entity.util.SecurityRulesTestDto;
 @Service
 public class UtilTestClient {
 
-    public Action<CloudStorageMatrixTestDto> cloudStorageMatrix() {
+    public IntegrationTestAction<CloudStorageMatrixTestDto> cloudStorageMatrix() {
         return new CloudStorageMatrixAction();
     }
 
-    public Action<DeploymentPreferencesTestDto> deploymentPreferencesV4() {
+    public IntegrationTestAction<DeploymentPreferencesTestDto> deploymentPreferencesV4() {
         return new DeploymentPreferencesAction();
     }
 
-    public Action<RepoConfigValidationTestDto> repoConfigValidationV4() {
+    public IntegrationTestAction<RepoConfigValidationTestDto> repoConfigValidationV4() {
         return new RepoConfigValidationAction();
     }
 
-    public Action<SecurityRulesTestDto> securityRulesV4() {
+    public IntegrationTestAction<SecurityRulesTestDto> securityRulesV4() {
         return new SecurityRulesAction();
     }
 
-    public Action<StackMatrixTestDto> stackMatrixV4() {
+    public IntegrationTestAction<StackMatrixTestDto> stackMatrixV4() {
         return new StackMatrixAction();
     }
 
-    public Action<SubscriptionTestDto> subscriptionV4() {
+    public IntegrationTestAction<SubscriptionTestDto> subscriptionV4() {
         return new SubscriptionAction();
     }
 
-    public Action<TagSpecificationsTestDto> tagSpecificationsV4() {
+    public IntegrationTestAction<TagSpecificationsTestDto> tagSpecificationsV4() {
         return new TagSpecificationsAction();
     }
 
-    public Action<VersionCheckTestDto> versionChecker() {
+    public IntegrationTestAction<VersionCheckTestDto> versionChecker() {
         return new VersionCheckAction();
     }
 

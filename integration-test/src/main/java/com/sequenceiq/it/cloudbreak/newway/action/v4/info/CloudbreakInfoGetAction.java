@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.info.responses.CloudbreakInfoResponse;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.info.CloudbreakInfoTestDto;
 
-public class CloudbreakInfoGetAction implements Action<CloudbreakInfoTestDto> {
+public class CloudbreakInfoGetAction implements IntegrationTestAction<CloudbreakInfoTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CloudbreakInfoGetAction.class);
 

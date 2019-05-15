@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.kubernetes.responses.KubernetesV4Response;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.kubernetes.KubernetesTestDto;
 
-public class KubernetesListAction implements Action<KubernetesTestDto> {
+public class KubernetesListAction implements IntegrationTestAction<KubernetesTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KubernetesListAction.class);
 

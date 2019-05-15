@@ -2,11 +2,11 @@ package com.sequenceiq.it.cloudbreak.newway.action.v4.environment;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.environment.requests.EnvironmentChangeCredentialV4Request;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.environment.EnvironmentTestDto;
 
-public class EnvironmentChangeCredentialAction implements Action<EnvironmentTestDto> {
+public class EnvironmentChangeCredentialAction implements IntegrationTestAction<EnvironmentTestDto> {
     @Override
     public EnvironmentTestDto action(TestContext testContext, EnvironmentTestDto testDto, CloudbreakClient cloudbreakClient) throws Exception {
         EnvironmentChangeCredentialV4Request envChangeCredentialRequest = new EnvironmentChangeCredentialV4Request();

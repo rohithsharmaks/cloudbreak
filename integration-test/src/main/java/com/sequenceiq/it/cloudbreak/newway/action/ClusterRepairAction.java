@@ -9,7 +9,7 @@ import com.sequenceiq.it.cloudbreak.newway.cloud.HostGroupType;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.stack.StackTestDto;
 
-public class ClusterRepairAction implements Action<StackTestDto> {
+public class ClusterRepairAction implements IntegrationTestAction<StackTestDto> {
 
     public static ClusterRepairAction valid() {
         return new ClusterRepairAction();

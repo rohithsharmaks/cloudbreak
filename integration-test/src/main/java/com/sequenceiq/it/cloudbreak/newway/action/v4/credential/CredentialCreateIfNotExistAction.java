@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.it.cloudbreak.exception.ProxyMethodInvocationException;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.credential.CredentialTestDto;
 
-public class CredentialCreateIfNotExistAction implements Action<CredentialTestDto> {
+public class CredentialCreateIfNotExistAction implements IntegrationTestAction<CredentialTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CredentialCreateIfNotExistAction.class);
 

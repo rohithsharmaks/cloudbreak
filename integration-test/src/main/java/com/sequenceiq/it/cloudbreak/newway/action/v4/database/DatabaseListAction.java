@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.database.responses.DatabaseV4Response;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.database.DatabaseTestDto;
 
-public class DatabaseListAction implements Action<DatabaseTestDto> {
+public class DatabaseListAction implements IntegrationTestAction<DatabaseTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseListAction.class);
 

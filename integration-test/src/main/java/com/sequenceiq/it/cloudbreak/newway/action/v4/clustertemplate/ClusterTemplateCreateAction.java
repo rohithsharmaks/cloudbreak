@@ -7,11 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.clustertemplate.ClusterTemplateTestDto;
 
-public class ClusterTemplateCreateAction implements Action<ClusterTemplateTestDto> {
+public class ClusterTemplateCreateAction implements IntegrationTestAction<ClusterTemplateTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClusterTemplateCreateAction.class);
 

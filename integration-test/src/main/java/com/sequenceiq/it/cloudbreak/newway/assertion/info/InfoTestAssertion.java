@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.sequenceiq.it.cloudbreak.newway.assertion.AssertionV2;
 import com.sequenceiq.it.cloudbreak.newway.dto.info.CloudbreakInfoTestDto;
+import com.sequenceiq.it.cloudbreak.newway.dto.info.EnvironmentInfoTestDto;
 
 public class InfoTestAssertion {
 
@@ -16,28 +17,34 @@ public class InfoTestAssertion {
     private InfoTestAssertion() {
     }
 
-    public static AssertionV2<CloudbreakInfoTestDto> infoContainsProperties(String name) {
+    public static AssertionV2<CloudbreakInfoTestDto> infoContainsCloudbreakProperties(String name) {
         return (testContext, testDto, cloudbreakClient) -> {
-            hasInfoVersion(testDto);
-            hasAppName(testDto, name);
+            hasInfoVersion(testDto.getResponse().getInfo());
+            hasAppName(testDto.getResponse().getInfo(), name);
             return testDto;
         };
     }
 
-    private static void hasInfoVersion(CloudbreakInfoTestDto dto) {
-        Map<String, Object> info = dto.getResponse().getInfo();
-        if (info.get(APP) != null) {
-            Map<String, Object> app = (Map<String, Object>) info.get(APP);
+    public static AssertionV2<EnvironmentInfoTestDto> infoContainsEnvironmentProperties(String name) {
+        return (testContext, testDto, cloudbreakClient) -> {
+            hasInfoVersion(testDto.getResponse().getInfo());
+            hasAppName(testDto.getResponse().getInfo(), name);
+            return testDto;
+        };
+    }
+
+    private static void hasInfoVersion(Map<String, Object> response) {
+        if (response.get(APP) != null) {
+            Map<String, Object> app = (Map<String, Object>) response.get(APP);
             if (app.get(VERSION) == null || "".equals(app.get(VERSION))) {
                 throw new IllegalArgumentException(String.format("The Service version is null or empty."));
             }
         }
     }
 
-    private static void hasAppName(CloudbreakInfoTestDto dto, String name) {
-        Map<String, Object> info = dto.getResponse().getInfo();
-        if (info.get(APP) != null) {
-            Map<String, Object> app = (Map<String, Object>) info.get(APP);
+    private static void hasAppName(Map<String, Object> response, String name) {
+        if (response.get(APP) != null) {
+            Map<String, Object> app = (Map<String, Object>) response.get(APP);
             if (!name.equals(app.get(NAME))) {
                 throw new IllegalArgumentException(String.format("The Service name is not equal with %s.", name));
             }

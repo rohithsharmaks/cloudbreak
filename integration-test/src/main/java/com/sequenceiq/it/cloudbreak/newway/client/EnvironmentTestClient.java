@@ -2,7 +2,7 @@ package com.sequenceiq.it.cloudbreak.newway.client;
 
 import org.springframework.stereotype.Service;
 
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.environment.EnvironmentAttachAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.environment.EnvironmentChangeCredentialAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.environment.EnvironmentCreateAction;
@@ -15,31 +15,31 @@ import com.sequenceiq.it.cloudbreak.newway.dto.environment.EnvironmentTestDto;
 @Service
 public class EnvironmentTestClient {
 
-    public Action<EnvironmentTestDto> createV4() {
+    public IntegrationTestAction<EnvironmentTestDto> createV4() {
         return new EnvironmentCreateAction();
     }
 
-    public Action<EnvironmentTestDto> getV4() {
+    public IntegrationTestAction<EnvironmentTestDto> getV4() {
         return new EnvironmentGetAction();
     }
 
-    public Action<EnvironmentTestDto> listV4() {
+    public IntegrationTestAction<EnvironmentTestDto> listV4() {
         return new EnvironmentListAction();
     }
 
-    public Action<EnvironmentTestDto> attachV4() {
+    public IntegrationTestAction<EnvironmentTestDto> attachV4() {
         return new EnvironmentAttachAction();
     }
 
-    public Action<EnvironmentTestDto> detachV4() {
+    public IntegrationTestAction<EnvironmentTestDto> detachV4() {
         return new EnvironmentDetachAction();
     }
 
-    public Action<EnvironmentTestDto> deleteV4() {
+    public IntegrationTestAction<EnvironmentTestDto> deleteV4() {
         return new EnvironmentDeleteAction();
     }
 
-    public Action<EnvironmentTestDto> changeCredential() {
+    public IntegrationTestAction<EnvironmentTestDto> changeCredential() {
         return new EnvironmentChangeCredentialAction();
     }
 }

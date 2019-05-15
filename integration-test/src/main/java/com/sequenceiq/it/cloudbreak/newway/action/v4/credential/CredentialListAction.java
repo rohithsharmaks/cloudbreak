@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.credentials.responses.CredentialV4Response;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.credential.CredentialTestDto;
 
-public class CredentialListAction implements Action<CredentialTestDto> {
+public class CredentialListAction implements IntegrationTestAction<CredentialTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CredentialListAction.class);
 

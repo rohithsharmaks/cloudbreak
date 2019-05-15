@@ -2,7 +2,7 @@ package com.sequenceiq.it.cloudbreak.newway.client;
 
 import org.springframework.stereotype.Service;
 
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.stack.ChangeImageAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.stack.StackBlueprintRequestAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.stack.StackCreateAction;
@@ -22,7 +22,7 @@ import com.sequenceiq.it.cloudbreak.newway.dto.stack.StackTestDto;
 @Service
 public class StackTestClient {
 
-    public Action<StackTestDto> nodeUnhealthyV4(String hostgroup, int nodeCount) {
+    public IntegrationTestAction<StackTestDto> nodeUnhealthyV4(String hostgroup, int nodeCount) {
         return new StackNodeUnhealthyAction(hostgroup, nodeCount);
     }
 
@@ -30,51 +30,51 @@ public class StackTestClient {
         return new StackScalePostAction();
     }
 
-    public Action<StackTestDto> createV4() {
+    public IntegrationTestAction<StackTestDto> createV4() {
         return new StackCreateAction();
     }
 
-    public Action<StackTestDto> deleteV4() {
+    public IntegrationTestAction<StackTestDto> deleteV4() {
         return new StackDeleteAction();
     }
 
-    public Action<StackTestDto> blueprintRequestV4() {
+    public IntegrationTestAction<StackTestDto> blueprintRequestV4() {
         return new StackBlueprintRequestAction();
     }
 
-    public Action<StackTestDto> getV4() {
+    public IntegrationTestAction<StackTestDto> getV4() {
         return new StackGetAction();
     }
 
-    public Action<StackTestDto> modifyAmbariPasswordV4() {
+    public IntegrationTestAction<StackTestDto> modifyAmbariPasswordV4() {
         return new StackModifyAmbariPasswordAction();
     }
 
-    public Action<StackTestDto> refreshV4() {
+    public IntegrationTestAction<StackTestDto> refreshV4() {
         return new StackRefreshAction();
     }
 
-    public Action<StackTestDto> requestV4() {
+    public IntegrationTestAction<StackTestDto> requestV4() {
         return new StackRequestAction();
     }
 
-    public Action<StackTestDto> startV4() {
+    public IntegrationTestAction<StackTestDto> startV4() {
         return new StackStartAction();
     }
 
-    public Action<StackTestDto> stopV4() {
+    public IntegrationTestAction<StackTestDto> stopV4() {
         return new StackStopAction();
     }
 
-    public Action<StackTestDto> syncV4() {
+    public IntegrationTestAction<StackTestDto> syncV4() {
         return new StackSyncAction();
     }
 
-    public Action<StackTestDto> deleteInstanceV4() {
+    public IntegrationTestAction<StackTestDto> deleteInstanceV4() {
         return new StackDeleteInstanceAction();
     }
 
-    public Action<StackTestDto> changeImage() {
+    public IntegrationTestAction<StackTestDto> changeImage() {
         return new ChangeImageAction();
     }
 

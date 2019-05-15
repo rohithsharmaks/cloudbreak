@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.mpacks.response.ManagementPackV4Response;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.mpack.MPackTestDto;
 
-public class MpackListAction implements Action<MPackTestDto> {
+public class MpackListAction implements IntegrationTestAction<MPackTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MpackListAction.class);
 

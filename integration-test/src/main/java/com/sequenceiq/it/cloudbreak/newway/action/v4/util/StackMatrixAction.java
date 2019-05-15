@@ -4,11 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.util.StackMatrixTestDto;
 
-public class StackMatrixAction implements Action<StackMatrixTestDto> {
+public class StackMatrixAction implements IntegrationTestAction<StackMatrixTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StackMatrixAction.class);
 

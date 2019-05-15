@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.common.mappable.CloudPlatform;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.imagecatalog.ImageCatalogTestDto;
 
-public class ImageCatalogGetImagesFromDefaultCatalogAction implements Action<ImageCatalogTestDto> {
+public class ImageCatalogGetImagesFromDefaultCatalogAction implements IntegrationTestAction<ImageCatalogTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageCatalogGetImagesFromDefaultCatalogAction.class);
 

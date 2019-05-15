@@ -6,11 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.database.DatabaseTestTestDto;
 
-public class DatabaseTestConnectionAction implements Action<DatabaseTestTestDto> {
+public class DatabaseTestConnectionAction implements IntegrationTestAction<DatabaseTestTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseTestConnectionAction.class);
 

@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.clustertemplate.responses.ClusterTemplateViewV4Response;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.ClusterTemplateUtil;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.clustertemplate.ClusterTemplateTestDto;
 
-public class ClusterTemplateListAction implements Action<ClusterTemplateTestDto> {
+public class ClusterTemplateListAction implements IntegrationTestAction<ClusterTemplateTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClusterTemplateListAction.class);
 

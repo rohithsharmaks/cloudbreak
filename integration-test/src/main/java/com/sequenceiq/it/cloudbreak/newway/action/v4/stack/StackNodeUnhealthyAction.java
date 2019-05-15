@@ -16,12 +16,13 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.autoscales.request.FailureRepor
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.response.instancegroup.InstanceGroupV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.response.instancegroup.instancemetadata.InstanceMetaDataV4Response;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.Entity;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.actor.Actor;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.stack.StackTestDto;
 
-public class StackNodeUnhealthyAction implements Action<StackTestDto> {
+public class StackNodeUnhealthyAction implements IntegrationTestAction<StackTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StackNodeUnhealthyAction.class);
 
@@ -35,7 +36,7 @@ public class StackNodeUnhealthyAction implements Action<StackTestDto> {
     }
 
     @Override
-    public StackTestDto action(TestContext testContext, StackTestDto testDto, CloudbreakClient client) throws Exception {
+    public StackTestDto action(TestContext testContext, StackTestDto testDto, Entity client) throws Exception {
         log(LOGGER, format(" Name: %s", testDto.getRequest().getName()));
         logJSON(LOGGER, " Stack unhealthy request:\n", testDto.getRequest());
         FailureReportV4Request failureReport = new FailureReportV4Request();
@@ -57,5 +58,4 @@ public class StackNodeUnhealthyAction implements Action<StackTestDto> {
         return instanceGroup.getMetadata().stream()
                 .map(InstanceMetaDataV4Response::getDiscoveryFQDN).collect(Collectors.toList()).subList(0, nodeCount);
     }
-
 }

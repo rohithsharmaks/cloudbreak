@@ -4,11 +4,11 @@ import static com.sequenceiq.it.cloudbreak.newway.log.Log.logJSON;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.environment.responses.SimpleEnvironmentV4Response;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.environment.EnvironmentTestDto;
 
-public class EnvironmentDeleteAction implements Action<EnvironmentTestDto> {
+public class EnvironmentDeleteAction implements IntegrationTestAction<EnvironmentTestDto> {
 
     @Override
     public EnvironmentTestDto action(TestContext testContext, EnvironmentTestDto testDto, CloudbreakClient cloudbreakClient) throws Exception {

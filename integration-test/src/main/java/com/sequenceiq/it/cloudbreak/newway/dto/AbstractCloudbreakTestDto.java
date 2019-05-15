@@ -18,7 +18,7 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.common.Status;
 import com.sequenceiq.it.cloudbreak.newway.Entity;
 import com.sequenceiq.it.cloudbreak.newway.ResourcePropertyProvider;
 import com.sequenceiq.it.cloudbreak.newway.TestParameter;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.assertion.AssertionV2;
 import com.sequenceiq.it.cloudbreak.newway.cloud.v2.CloudProvider;
 import com.sequenceiq.it.cloudbreak.newway.context.RunningParameter;
@@ -106,20 +106,20 @@ public abstract class AbstractCloudbreakTestDto<R, S, T extends CloudbreakTestDt
         throw new NotImplementedException(String.format("The entity(%s) must be implement the valid() method.", getClass()));
     }
 
-    public T when(Class<T> entityClass, Action<T> action) {
-        return testContext.when(entityClass, action, emptyRunningParameter());
+    public T when(Class<T> entityClass, IntegrationTestAction<T> integrationTestAction) {
+        return testContext.when(entityClass, integrationTestAction, emptyRunningParameter());
     }
 
-    public T when(Action<T> action) {
-        return testContext.when((T) this, action, emptyRunningParameter());
+    public T when(IntegrationTestAction<T> integrationTestAction) {
+        return testContext.when((T) this, integrationTestAction, emptyRunningParameter());
     }
 
-    public T when(Class<T> entityClass, Action<T> action, RunningParameter runningParameter) {
-        return testContext.when(entityClass, action, runningParameter);
+    public T when(Class<T> entityClass, IntegrationTestAction<T> integrationTestAction, RunningParameter runningParameter) {
+        return testContext.when(entityClass, integrationTestAction, runningParameter);
     }
 
-    public T when(Action<T> action, RunningParameter runningParameter) {
-        return testContext.when((T) this, action, runningParameter);
+    public T when(IntegrationTestAction<T> integrationTestAction, RunningParameter runningParameter) {
+        return testContext.when((T) this, integrationTestAction, runningParameter);
     }
 
     public T then(AssertionV2<T> assertion) {
@@ -225,8 +225,8 @@ public abstract class AbstractCloudbreakTestDto<R, S, T extends CloudbreakTestDt
         return resourcePropertyProvider;
     }
 
-    public <T extends CloudbreakTestDto> T deleteGiven(Class<T> clazz, Action<T> action, RunningParameter runningParameter) {
-        testContext.when((T) testContext.given(clazz), action, runningParameter);
+    public <T extends CloudbreakTestDto> T deleteGiven(Class<T> clazz, IntegrationTestAction<T> integrationTestAction, RunningParameter runningParameter) {
+        testContext.when((T) testContext.given(clazz), integrationTestAction, runningParameter);
         return testContext.expect((T) testContext.given(clazz), BadRequestException.class, runningParameter);
     }
 }

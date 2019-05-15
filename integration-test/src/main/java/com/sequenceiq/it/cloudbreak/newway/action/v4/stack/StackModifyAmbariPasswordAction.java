@@ -9,11 +9,11 @@ import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.UserNamePasswordV4Request;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.stack.StackTestDto;
 
-public class StackModifyAmbariPasswordAction implements Action<StackTestDto> {
+public class StackModifyAmbariPasswordAction implements IntegrationTestAction<StackTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StackModifyAmbariPasswordAction.class);
 

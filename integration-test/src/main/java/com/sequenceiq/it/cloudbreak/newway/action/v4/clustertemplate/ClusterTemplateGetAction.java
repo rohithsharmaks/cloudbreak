@@ -8,11 +8,11 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Sets;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.clustertemplate.responses.ClusterTemplateV4Response;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.clustertemplate.ClusterTemplateTestDto;
 
-public class ClusterTemplateGetAction implements Action<ClusterTemplateTestDto> {
+public class ClusterTemplateGetAction implements IntegrationTestAction<ClusterTemplateTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClusterTemplateGetAction.class);
 

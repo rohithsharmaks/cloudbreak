@@ -2,7 +2,7 @@ package com.sequenceiq.it.cloudbreak.newway.client;
 
 import org.springframework.stereotype.Service;
 
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.connector.PlatformAccessConfigsAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.connector.PlatformDisksAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.connector.PlatformEncryptionKeysAction;
@@ -27,43 +27,43 @@ import com.sequenceiq.it.cloudbreak.newway.dto.connector.PlatformVmTypesTestDto;
 @Service
 public class ConnectorTestClient {
 
-    public Action<PlatformAccessConfigsTestDto> accessConfigs() {
+    public IntegrationTestAction<PlatformAccessConfigsTestDto> accessConfigs() {
         return new PlatformAccessConfigsAction();
     }
 
-    public Action<PlatformDiskTestDto> disks() {
+    public IntegrationTestAction<PlatformDiskTestDto> disks() {
         return new PlatformDisksAction();
     }
 
-    public Action<PlatformEncryptionKeysTestDto> encryptionKeys() {
+    public IntegrationTestAction<PlatformEncryptionKeysTestDto> encryptionKeys() {
         return new PlatformEncryptionKeysAction();
     }
 
-    public Action<PlatformIpPoolsTestDto> ipPools() {
+    public IntegrationTestAction<PlatformIpPoolsTestDto> ipPools() {
         return new PlatformIpPoolsAction();
     }
 
-    public Action<PlatformNetworksTestDto> networks() {
+    public IntegrationTestAction<PlatformNetworksTestDto> networks() {
         return new PlatformNetworksAction();
     }
 
-    public Action<PlatformGatewaysTestDto> gateways() {
+    public IntegrationTestAction<PlatformGatewaysTestDto> gateways() {
         return new PlatformGatewaysAction();
     }
 
-    public Action<PlatformRegionTestDto> regions() {
+    public IntegrationTestAction<PlatformRegionTestDto> regions() {
         return new PlatformRegionsAction();
     }
 
-    public Action<PlatformSecurityGroupsTestDto> securityGroups() {
+    public IntegrationTestAction<PlatformSecurityGroupsTestDto> securityGroups() {
         return new PlatformSecurityGroupsAction();
     }
 
-    public Action<PlatformSshKeysTestDto> sshKeys() {
+    public IntegrationTestAction<PlatformSshKeysTestDto> sshKeys() {
         return new PlatformSshKeysAction();
     }
 
-    public Action<PlatformVmTypesTestDto> vmTypes() {
+    public IntegrationTestAction<PlatformVmTypesTestDto> vmTypes() {
         return new PlatformVmTypesAction();
     }
 

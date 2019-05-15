@@ -8,11 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.stack.StackTestDto;
 
-public class StackDeleteAction implements Action<StackTestDto> {
+public class StackDeleteAction implements IntegrationTestAction<StackTestDto> {
 
     public static final String INSTANCE_ID = "SDA-instanceId";
 

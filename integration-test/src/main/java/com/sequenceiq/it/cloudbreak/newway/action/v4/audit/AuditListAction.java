@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.audits.responses.AuditEventV4Response;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
+import com.sequenceiq.it.cloudbreak.newway.action.IntegrationTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.dto.audit.AuditTestDto;
 
-public class AuditListAction implements Action<AuditTestDto> {
+public class AuditListAction implements IntegrationTestAction<AuditTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditListAction.class);
 
