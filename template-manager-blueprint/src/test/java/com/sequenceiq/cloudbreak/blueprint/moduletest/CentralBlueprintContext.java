@@ -22,13 +22,12 @@ import com.sequenceiq.cloudbreak.blueprint.validation.StackServiceComponentDescr
 import com.sequenceiq.cloudbreak.common.metrics.MetricService;
 import com.sequenceiq.cloudbreak.json.JsonHelper;
 import com.sequenceiq.cloudbreak.service.CloudbreakResourceReaderService;
-import com.sequenceiq.cloudbreak.services.filesystem.FileSystemType;
+import com.sequenceiq.cloudbreak.common.type.filesystem.FileSystemType;
 import com.sequenceiq.cloudbreak.template.filesystem.FileSystemConfigurator;
 import com.sequenceiq.cloudbreak.util.FileReaderUtils;
 import com.sequenceiq.cloudbreak.util.JsonUtil;
 import com.sequenceiq.secret.SecretEngine;
 import com.sequenceiq.secret.service.SecretService;
-import com.sequenceiq.cloudbreak.common.json.JsonUtil;
 
 @ContextConfiguration
 public class CentralBlueprintContext {

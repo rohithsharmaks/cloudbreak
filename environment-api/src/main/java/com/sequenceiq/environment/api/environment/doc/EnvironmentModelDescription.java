@@ -31,6 +31,7 @@ public class EnvironmentModelDescription {
     public static final String CREDENTIAL_RESPONSE = "Credential of the environment.";
     public static final String PROXY_CONFIGS_RESPONSE = "Proxy configurations in the environment.";
     public static final String CLOUD_PLATFORM = "Cloud platform of the environment.";
+    public static final String STATUS = "Status of the environment.";
 
     private EnvironmentModelDescription() {
     }

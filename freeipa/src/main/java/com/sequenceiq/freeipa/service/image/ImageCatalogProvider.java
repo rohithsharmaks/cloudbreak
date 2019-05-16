@@ -30,7 +30,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sequenceiq.cloudbreak.client.RestClientUtil;
+import com.sequenceiq.cloudbreak.restclient.RestClientUtil;
 import com.sequenceiq.cloudbreak.util.FileReaderUtils;
 import com.sequenceiq.freeipa.api.model.image.Image;
 import com.sequenceiq.freeipa.api.model.image.ImageCatalog;
