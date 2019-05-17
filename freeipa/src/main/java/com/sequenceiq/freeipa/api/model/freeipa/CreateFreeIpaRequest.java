@@ -40,6 +40,10 @@ public class CreateFreeIpaRequest extends CreateFreeIpaBase implements JsonEntit
 
     private String owner;
 
+    @NotNull
+    @ApiModelProperty(value = ModelDescriptions.StackModelDescription.TENANANT, required = true)
+    private String tenant;
+
     @Valid
     @ApiModelProperty(PLACEMENT_SETTINGS)
     private PlacementSettingsV4Request placement;
@@ -157,6 +161,14 @@ public class CreateFreeIpaRequest extends CreateFreeIpaBase implements JsonEntit
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public String getTenant() {
+        return tenant;
+    }
+
+    public void setTenant(String tenant) {
+        this.tenant = tenant;
     }
 }
 

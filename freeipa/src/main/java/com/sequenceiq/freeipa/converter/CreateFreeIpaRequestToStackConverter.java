@@ -68,6 +68,7 @@ public class CreateFreeIpaRequestToStackConverter implements Converter<CreateFre
     public Stack convert(CreateFreeIpaRequest source) {
         Stack stack = new Stack();
         stack.setName(source.getName());
+        stack.setTenant(source.getTenant());
         stack.setCreated(System.currentTimeMillis());
         stack.setGatewayport(source.getGatewayPort() != null ? source.getGatewayPort() : nginxPort);
         stack.setStackStatus(new StackStatus(stack, DetailedStackStatus.PROVISION_REQUESTED));

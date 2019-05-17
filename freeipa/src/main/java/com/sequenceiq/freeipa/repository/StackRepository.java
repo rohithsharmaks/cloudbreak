@@ -17,4 +17,6 @@ public interface StackRepository extends CrudRepository<Stack, Long> {
     Optional<Stack> findOneWithLists(@Param("id") Long id);
 
     Optional<Stack> findByNameAndEnvironment(String name, String environment);
+
+    Optional<Stack> findByTenantAndEnvironment(String tenant, String environment);
 }
