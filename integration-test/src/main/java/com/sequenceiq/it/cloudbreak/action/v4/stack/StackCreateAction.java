@@ -1,0 +1,32 @@
+package com.sequenceiq.it.cloudbreak.action.v4.stack;
+
+import static com.sequenceiq.it.cloudbreak.log.Log.log;
+import static com.sequenceiq.it.cloudbreak.log.Log.logJSON;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sequenceiq.it.cloudbreak.CloudbreakClient;
+import com.sequenceiq.it.cloudbreak.action.Action;
+import com.sequenceiq.it.cloudbreak.context.TestContext;
+import com.sequenceiq.it.cloudbreak.dto.stack.StackTestDto;
+import com.sequenceiq.it.cloudbreak.log.Log;
+
+public class StackCreateAction implements Action<StackTestDto> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(StackCreateAction.class);
+
+    @Override
+    public StackTestDto action(TestContext testContext, StackTestDto testDto, CloudbreakClient client) throws Exception {
+        Log.log(LOGGER, " Name: " + testDto.getRequest().getName());
+        Log.logJSON(LOGGER, " Stack post request:\n", testDto.getRequest());
+        testDto.setResponse(
+                client.getCloudbreakClient()
+                        .stackV4Endpoint()
+                        .post(client.getWorkspaceId(), testDto.getRequest()));
+        Log.logJSON(LOGGER, " Stack created was successfully:\n", testDto.getResponse());
+        Log.log(LOGGER, " ID: " + testDto.getResponse().getId());
+
+        return testDto;
+    }
+}

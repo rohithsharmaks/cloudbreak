@@ -1,6 +1,7 @@
 package com.sequenceiq.it.cloudbreak;
 
 import static com.sequenceiq.cloudbreak.client.CloudbreakUserCrnClient.CloudbreakEndpoint;
+import static com.sequenceiq.it.cloudbreak.context.CloudbreakITContextConstants.STACK_NAME;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,11 +33,18 @@ import com.sequenceiq.cloudbreak.client.CloudbreakUserCrnClient;
 import com.sequenceiq.cloudbreak.client.CloudbreakUserCrnClientBuilder;
 import com.sequenceiq.it.IntegrationTestContext;
 import com.sequenceiq.it.SuiteContext;
-import com.sequenceiq.it.cloudbreak.config.ITProps;
-import com.sequenceiq.it.cloudbreak.v2.CloudbreakV2Constants;
+import com.sequenceiq.it.cloudbreak.context.CloudbreakITContextConstants;
+import com.sequenceiq.it.cloudbreak.util.CleanupService;
+import com.sequenceiq.it.config.ITProps;
 import com.sequenceiq.it.config.IntegrationTestConfiguration;
-import com.sequenceiq.it.util.CleanupService;
 
+//import com.sequenceiq.it.cloudbreak.config.ITProps;
+
+//import com.sequenceiq.it.cloudbreak.v2.CloudbreakV2Constants;
+//import com.sequenceiq.it.util.CleanupService;
+
+
+//todo: investigate, itprop
 @ContextConfiguration(classes = IntegrationTestConfiguration.class, initializers = ConfigFileApplicationContextInitializer.class)
 public class CloudbreakTestSuiteInitializer extends AbstractTestNGSpringContextTests {
 
@@ -176,7 +184,7 @@ public class CloudbreakTestSuiteInitializer extends AbstractTestNGSpringContextT
         if (StringUtils.hasLength(stackName)) {
             Long resourceId = endpoint.getStatusByName(workspaceId, stackName).getId();
             itContext.putContextParam(CloudbreakITContextConstants.STACK_ID, resourceId.toString());
-            itContext.putContextParam(CloudbreakV2Constants.STACK_NAME, stackName);
+            itContext.putContextParam(STACK_NAME, stackName);
         }
     }
 
