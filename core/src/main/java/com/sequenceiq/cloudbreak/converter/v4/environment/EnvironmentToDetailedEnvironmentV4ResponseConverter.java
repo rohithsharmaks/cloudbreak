@@ -20,7 +20,6 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.environment.responses.Environme
 import com.sequenceiq.cloudbreak.api.endpoint.v4.environment.responses.LocationV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.environment.responses.ServiceDescriptorV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.kerberos.responses.KerberosV4Response;
-import com.sequenceiq.cloudbreak.api.endpoint.v4.kubernetes.responses.KubernetesV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.ldaps.responses.LdapV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.proxies.responses.ProxyV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.response.StackViewV4Response;
@@ -66,11 +65,6 @@ public class EnvironmentToDetailedEnvironmentV4ResponseConverter extends Abstrac
                 source.getRdsConfigs()
                         .stream()
                         .map(rdsConfig -> getConversionService().convert(rdsConfig, DatabaseV4Response.class))
-                        .collect(Collectors.toSet()));
-        response.setKubernetes(
-                source.getKubernetesConfigs()
-                        .stream()
-                        .map(kubeConfig -> getConversionService().convert(kubeConfig, KubernetesV4Response.class))
                         .collect(Collectors.toSet()));
         response.setKerberoses(
                 source.getKerberosConfigs()

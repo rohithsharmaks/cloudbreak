@@ -30,7 +30,6 @@ import com.sequenceiq.cloudbreak.common.json.JsonUtil;
 import com.sequenceiq.cloudbreak.domain.ArchivableResource;
 import com.sequenceiq.cloudbreak.domain.Credential;
 import com.sequenceiq.cloudbreak.domain.KerberosConfig;
-import com.sequenceiq.cloudbreak.domain.KubernetesConfig;
 import com.sequenceiq.cloudbreak.domain.LdapConfig;
 import com.sequenceiq.cloudbreak.domain.ProxyConfig;
 import com.sequenceiq.cloudbreak.domain.RDSConfig;
@@ -101,10 +100,6 @@ public class Environment implements WorkspaceAwareResource, ArchivableResource {
     private Set<RDSConfig> rdsConfigs = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinTable(name = "env_kubernetes", joinColumns = @JoinColumn(name = "envid"), inverseJoinColumns = @JoinColumn(name = "kubernetesid"))
-    private Set<KubernetesConfig> kubernetesConfigs = new HashSet<>();
-
-    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinTable(name = "env_kdc", joinColumns = @JoinColumn(name = "envid"), inverseJoinColumns = @JoinColumn(name = "kdcid"))
     private Set<KerberosConfig> kerberosConfigs = new HashSet<>();
 
@@ -157,7 +152,6 @@ public class Environment implements WorkspaceAwareResource, ArchivableResource {
         ldapConfigs = null;
         rdsConfigs = null;
         proxyConfigs = null;
-        kubernetesConfigs = null;
         kerberosConfigs = null;
         datalakeResources = null;
     }
@@ -223,14 +217,6 @@ public class Environment implements WorkspaceAwareResource, ArchivableResource {
 
     public void setRdsConfigs(Set<RDSConfig> rdsConfigs) {
         this.rdsConfigs = rdsConfigs;
-    }
-
-    public Set<KubernetesConfig> getKubernetesConfigs() {
-        return kubernetesConfigs;
-    }
-
-    public void setKubernetesConfigs(Set<KubernetesConfig> kubernetesConfigs) {
-        this.kubernetesConfigs = kubernetesConfigs;
     }
 
     public Set<StackApiView> getStacks() {

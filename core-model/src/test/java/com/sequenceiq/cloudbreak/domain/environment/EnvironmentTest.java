@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import com.sequenceiq.cloudbreak.domain.Credential;
 import com.sequenceiq.cloudbreak.domain.KerberosConfig;
-import com.sequenceiq.cloudbreak.domain.KubernetesConfig;
 import com.sequenceiq.cloudbreak.domain.ProxyConfig;
 import com.sequenceiq.cloudbreak.domain.stack.cluster.DatalakeResources;
 import com.sequenceiq.cloudbreak.workspace.model.Workspace;
@@ -38,13 +37,11 @@ public class EnvironmentTest {
         underTest.setCredential(credential);
         underTest.setKerberosConfigs(Set.of(new KerberosConfig()));
         underTest.setDatalakeResources(Set.of(new DatalakeResources()));
-        underTest.setKubernetesConfigs(Set.of(new KubernetesConfig()));
         underTest.setProxyConfigs(Set.of(new ProxyConfig()));
 
         underTest.unsetRelationsToEntitiesToBeDeleted();
 
         assertNull(underTest.getKerberosConfigs());
-        assertNull(underTest.getKubernetesConfigs());
         assertNull(underTest.getLdapConfigs());
         assertNull(underTest.getProxyConfigs());
         assertNull(underTest.getRdsConfigs());
