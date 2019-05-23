@@ -8,9 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurer;
@@ -30,13 +28,15 @@ import com.sequenceiq.cloudbreak.cache.CacheDefinition;
 
 @Configuration
 @EnableCaching
-@EnableAutoConfiguration
 public class CachingConfig implements CachingConfigurer {
 
-    @Inject
-    private List<CacheDefinition> cacheDefinitions;
+    private final List<CacheDefinition> cacheDefinitions;
 
     private final Map<Class<?>, CacheDefinition> classCacheDefinitionMap = new HashMap<>();
+
+    public CachingConfig(List<CacheDefinition> cacheDefinitions) {
+        this.cacheDefinitions = cacheDefinitions;
+    }
 
     @PostConstruct
     public void postCacheDefinition() {

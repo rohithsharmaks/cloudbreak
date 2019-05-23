@@ -1,4 +1,4 @@
-package com.sequenceiq.environment.credential.converter;
+package com.sequenceiq.environment.credential.v1.converter;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -20,7 +20,7 @@ public class CredentialToCloudCredentialConverter {
         if (credential == null) {
             return null;
         }
-        Map<String, Object> fields;
+        final Map<String, Object> fields;
         if (credential.getId() == null) {
             fields = isEmpty(credential.getAttributes()) ? new HashMap<>() : new Json(credential.getAttributes()).getMap();
         } else {

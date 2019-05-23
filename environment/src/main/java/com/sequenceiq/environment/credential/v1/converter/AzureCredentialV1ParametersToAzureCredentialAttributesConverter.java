@@ -1,4 +1,6 @@
-package com.sequenceiq.environment.credential.converter;
+package com.sequenceiq.environment.credential.v1.converter;
+
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -16,8 +18,8 @@ public class AzureCredentialV1ParametersToAzureCredentialAttributesConverter {
 
     public AzureCredentialAttributes convert(AzureCredentialRequestParameters source) {
         AzureCredentialAttributes response = new AzureCredentialAttributes();
-        response.setAppBased(getAppBased(source.getAppBased()));
-        response.setRoleBased(getRoleBased(source.getRoleBased()));
+        Optional.ofNullable(source.getAppBased()).ifPresent(param -> response.setAppBased(getAppBased(param)));
+        Optional.ofNullable(source.getRoleBased()).ifPresent(param -> response.setRoleBased(getRoleBased(param)));
         response.setSubscriptionId(source.getSubscriptionId());
         response.setTenantId(source.getTenantId());
         return response;
@@ -25,8 +27,8 @@ public class AzureCredentialV1ParametersToAzureCredentialAttributesConverter {
 
     public AzureCredentialResponseParameters convert(AzureCredentialAttributes source) {
         AzureCredentialResponseParameters response = new AzureCredentialResponseParameters();
+        Optional.ofNullable(source.getRoleBased()).ifPresent(param -> response.setRoleBased(getRoleBased(param)));
         response.setAccessKey(source.getAccessKey());
-        response.setRoleBased(getRoleBased(source.getRoleBased()));
         response.setSubscriptionId(source.getSubscriptionId());
         response.setTenantId(source.getTenantId());
         return response;

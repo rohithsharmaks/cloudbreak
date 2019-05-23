@@ -1,4 +1,6 @@
-package com.sequenceiq.environment.credential.converter;
+package com.sequenceiq.environment.credential.v1.converter;
+
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -14,15 +16,15 @@ public class GcpCredentialV1ParametersToGcpCredentialAttributesConverter {
 
     public GcpCredentialAttributes convert(GcpCredentialParameters source) {
         GcpCredentialAttributes response = new GcpCredentialAttributes();
-        response.setJson(getJson(source.getJson()));
-        response.setP12(getP12(source.getP12()));
+        Optional.ofNullable(source.getJson()).ifPresent(param -> response.setJson(getJson(param)));
+        Optional.ofNullable(source.getP12()).ifPresent(param -> response.setP12(getP12(param)));
         return response;
     }
 
     public GcpCredentialParameters convert(GcpCredentialAttributes source) {
         GcpCredentialParameters response = new GcpCredentialParameters();
-        response.setJson(getJson(source.getJson()));
-        response.setP12(getP12(source.getP12()));
+        Optional.ofNullable(source.getJson()).ifPresent(param -> response.setJson(getJson(param)));
+        Optional.ofNullable(source.getP12()).ifPresent(param -> response.setP12(getP12(param)));
         return response;
     }
 

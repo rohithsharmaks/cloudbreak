@@ -6,14 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.stereotype.Service;
 
 import com.sequenceiq.cloudbreak.cloud.model.Platform;
 import com.sequenceiq.cloudbreak.util.JsonUtil;
-import com.sequenceiq.environment.definition.MissingParameterException;
-import com.sequenceiq.environment.definition.ResourceDefinitionService;
+import com.sequenceiq.environment.exception.MissingParameterException;
+import com.sequenceiq.environment.credential.service.ResourceDefinitionService;
 
 @Service
 public class CredentialDefinitionService {
@@ -22,8 +20,11 @@ public class CredentialDefinitionService {
 
     private static final String RESOURCE_TYPE = "credential";
 
-    @Inject
-    private ResourceDefinitionService definitionService;
+    private final ResourceDefinitionService definitionService;
+
+    public CredentialDefinitionService(ResourceDefinitionService definitionService) {
+        this.definitionService = definitionService;
+    }
 
     public void checkProperties(Platform cloudPlatform, Map<String, Object> properties) {
         processValues(getDefinition(cloudPlatform), properties);

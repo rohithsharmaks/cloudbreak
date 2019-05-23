@@ -1,4 +1,6 @@
-package com.sequenceiq.environment.credential.converter;
+package com.sequenceiq.environment.credential.v1.converter;
+
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -18,10 +20,10 @@ public class OpenStackCredentialV1ParametersToOpenStackCredentialAttributesConve
 
     public OpenStackCredentialAttributes convert(OpenstackParameters source) {
         OpenStackCredentialAttributes response = new OpenStackCredentialAttributes();
+        Optional.ofNullable(source.getKeystoneV2()).ifPresent(param -> response.setKeystoneV2(getKeystoneV2(param)));
+        Optional.ofNullable(source.getKeystoneV3()).ifPresent(param -> response.setKeystoneV3(getKeystoneV3(param)));
         response.setEndpoint(source.getEndpoint());
         response.setFacing(source.getFacing());
-        response.setKeystoneV2(getKeystoneV2(source.getKeystoneV2()));
-        response.setKeystoneV3(getKeystoneV3(source.getKeystoneV3()));
         response.setPassword(source.getPassword());
         response.setUserName(source.getUserName());
         return response;
@@ -29,10 +31,10 @@ public class OpenStackCredentialV1ParametersToOpenStackCredentialAttributesConve
 
     public OpenstackParameters convert(OpenStackCredentialAttributes source) {
         OpenstackParameters response = new OpenstackParameters();
+        Optional.ofNullable(source.getKeystoneV2()).ifPresent(param -> response.setKeystoneV2(getKeystoneV2(param)));
+        Optional.ofNullable(source.getKeystoneV3()).ifPresent(param -> response.setKeystoneV3(getKeystoneV3(param)));
         response.setEndpoint(source.getEndpoint());
         response.setFacing(source.getFacing());
-        response.setKeystoneV2(getKeystoneV2(source.getKeystoneV2()));
-        response.setKeystoneV3(getKeystoneV3(source.getKeystoneV3()));
         response.setPassword(source.getPassword());
         response.setUserName(source.getUserName());
         return response;

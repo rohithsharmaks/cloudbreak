@@ -1,4 +1,6 @@
-package com.sequenceiq.environment.credential.converter;
+package com.sequenceiq.environment.credential.v1.converter;
+
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -14,15 +16,15 @@ public class AwsCredentialV1ParametersToAwsCredentialAttributesConverter {
 
     public AwsCredentialAttributes convert(AwsCredentialParameters source) {
         AwsCredentialAttributes response = new AwsCredentialAttributes();
-        response.setKeyBased(getKeyBased(source.getKeyBased()));
-        response.setRoleBased(getRoleBased(source.getRoleBased()));
+        Optional.ofNullable(source.getKeyBased()).ifPresent(params -> response.setKeyBased(getKeyBased(params)));
+        Optional.ofNullable(source.getRoleBased()).ifPresent(params -> response.setRoleBased(getRoleBased(params)));
         return response;
     }
 
     public AwsCredentialParameters convert(AwsCredentialAttributes source) {
         AwsCredentialParameters response = new AwsCredentialParameters();
-        response.setKeyBased(getKeyBased(source.getKeyBased()));
-        response.setRoleBased(getRoleBased(source.getRoleBased()));
+        Optional.ofNullable(source.getKeyBased()).ifPresent(params -> response.setKeyBased(getKeyBased(params)));
+        Optional.ofNullable(source.getRoleBased()).ifPresent(params -> response.setRoleBased(getRoleBased(params)));
         return response;
     }
 
