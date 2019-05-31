@@ -16,6 +16,8 @@ public class SdxClusterRequest {
     @NotNull
     private String clusterShape;
 
+
+
     private Map<String, String> tags;
 
     public String getEnvironment() {

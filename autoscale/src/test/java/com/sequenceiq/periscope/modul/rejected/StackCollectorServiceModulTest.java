@@ -2,6 +2,7 @@ package com.sequenceiq.periscope.modul.rejected;
 
 import static com.sequenceiq.periscope.utils.DelayedAnswer.delayed;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,7 +33,7 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.autoscales.AutoscaleV4Endpoint;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.autoscales.response.AutoscaleStackV4Responses;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.common.Status;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.response.AutoscaleStackV4Response;
-import com.sequenceiq.cloudbreak.client.CloudbreakIdentityClient;
+import com.sequenceiq.cloudbreak.client.CloudbreakUserCrnClient;
 import com.sequenceiq.cloudbreak.common.json.JsonUtil;
 import com.sequenceiq.periscope.api.model.ClusterState;
 import com.sequenceiq.periscope.domain.Cluster;
@@ -73,7 +74,7 @@ public class StackCollectorServiceModulTest extends StackCollectorContext {
     private HttpNotificationSender httpNotificationSender;
 
     @Mock
-    private CloudbreakIdentityClient cloudbreakClient;
+    private CloudbreakUserCrnClient cloudbreakClient;
 
     @Mock
     private AmbariClient ambariClient;
@@ -90,7 +91,7 @@ public class StackCollectorServiceModulTest extends StackCollectorContext {
 
         when(ambariClientProvider.createAmbariClient(any())).thenReturn(ambariClient);
         when(cloudbreakClientConfiguration.cloudbreakClient()).thenReturn(cloudbreakClient);
-        when(cloudbreakClient.autoscaleEndpoint()).thenReturn(autoscaleEndpoint);
+        when(cloudbreakClient.withCrn(anyString()).autoscaleEndpoint()).thenReturn(autoscaleEndpoint);
 
         ReflectionTestUtils.setField(rejectedThreadService, "rejectedThreads", new ConcurrentHashMap<>());
     }

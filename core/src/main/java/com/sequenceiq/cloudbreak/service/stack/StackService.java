@@ -19,7 +19,6 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.google.api.client.repackaged.com.google.common.base.Strings;
@@ -251,18 +250,15 @@ public class StackService {
         }
     }
 
-    @PreAuthorize("#oauth2.hasScope('cloudbreak.autoscale')")
     public Long getWorkspaceId(Long stackId) {
         return stackRepository.findWorkspaceIdById(stackId);
     }
 
-    @PreAuthorize("#oauth2.hasScope('cloudbreak.autoscale')")
     public Tenant getTenant(Long stackId) {
         Workspace workspace = stackRepository.findWorkspaceById(stackId).orElseThrow(notFound("workspace", stackId));
         return workspace.getTenant();
     }
 
-    @PreAuthorize("#oauth2.hasScope('cloudbreak.autoscale')")
     public Set<AutoscaleStackV4Response> getAllForAutoscale() {
         try {
             return transactionService.required(() -> {

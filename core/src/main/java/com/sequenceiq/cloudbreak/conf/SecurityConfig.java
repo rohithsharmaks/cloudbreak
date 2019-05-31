@@ -95,7 +95,7 @@ public class SecurityConfig {
                     .antMatchers(DISTROX_API)
                     .access("#oauth2.isOAuth()")
                     .antMatchers(AUTOSCALE_API)
-                    .access("#oauth2.hasScope('cloudbreak.autoscale')")
+                    .access("#oauth2.isOAuth()")
 
                     .antMatchers(API_ROOT_CONTEXT + "/swagger.json").permitAll()
                     .antMatchers(API_ROOT_CONTEXT + "/api-docs/**").permitAll()

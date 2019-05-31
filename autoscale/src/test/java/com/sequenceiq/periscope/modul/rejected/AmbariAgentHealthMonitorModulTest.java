@@ -41,7 +41,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.sequenceiq.ambari.client.AmbariClient;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.autoscales.AutoscaleV4Endpoint;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.autoscales.request.FailureReportV4Request;
-import com.sequenceiq.cloudbreak.client.CloudbreakIdentityClient;
+import com.sequenceiq.cloudbreak.client.CloudbreakUserCrnClient;
 import com.sequenceiq.cloudbreak.common.json.JsonUtil;
 import com.sequenceiq.periscope.api.model.ClusterState;
 import com.sequenceiq.periscope.domain.Cluster;
@@ -87,7 +87,7 @@ public class AmbariAgentHealthMonitorModulTest extends RejectedThreadContext {
     private JobDetail jobDetail;
 
     @Mock
-    private CloudbreakIdentityClient cloudbreakClient;
+    private CloudbreakUserCrnClient cloudbreakClient;
 
     @Before
     public void setUp() throws Exception {
@@ -115,7 +115,7 @@ public class AmbariAgentHealthMonitorModulTest extends RejectedThreadContext {
 
         when(jobDetail.getKey()).thenReturn(JobKey.jobKey("test-heart-beat-critical"));
         when(clusterService.findById(clusterId)).thenReturn(cluster);
-        when(cloudbreakClient.autoscaleEndpoint()).thenReturn(autoscaleEndpoint);
+        when(cloudbreakClient.withCrn(anyString()).autoscaleEndpoint()).thenReturn(autoscaleEndpoint);
 
         Map<String, Object> map = new HashMap<>();
         map.put("state", "CRITICAL");

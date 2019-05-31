@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import com.sequenceiq.caas.model.AltusKey;
 
-public class CrnHelperTest {
+public class InternalCrnBuilderTest {
 
     @Test
     public void extractCrnFromAuthHeader() {

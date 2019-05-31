@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.sequenceiq.cloudbreak.client.CloudbreakIdentityClient;
-import com.sequenceiq.cloudbreak.client.CloudbreakIdentityClient.CloudbreakIdentityClientBuilder;
+import com.sequenceiq.cloudbreak.auth.altus.Crn.Service;
+import com.sequenceiq.cloudbreak.auth.altus.InternalCrnBuilder;
+import com.sequenceiq.cloudbreak.client.CloudbreakUserCrnClient;
+import com.sequenceiq.cloudbreak.client.CloudbreakUserCrnClientBuilder;
 
 @Configuration
 public class CloudbreakClientConfiguration {
@@ -30,7 +32,17 @@ public class CloudbreakClientConfiguration {
     private String secret;
 
     @Bean
-    public CloudbreakIdentityClient cloudbreakClient() {
-        return new CloudbreakIdentityClientBuilder(cloudbreakUrl + cbRootContextPath, identityServerUrl, clientId).withSecret(secret).build();
+    public CloudbreakUserCrnClient cloudbreakClient() {
+        return new CloudbreakUserCrnClientBuilder(cloudbreakUrl + cbRootContextPath)
+                .withCertificateValidation(false)
+                .withIgnorePreValidation(true)
+                .withDebug(true)
+                .build();
     }
+
+    @Bean
+    public InternalCrnBuilder internalCrnBuilder() {
+        return new InternalCrnBuilder(Service.AUTOSCALE);
+    }
+
 }
