@@ -1,5 +1,17 @@
 package com.sequenceiq.cloudbreak.orchestrator.model;
 
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+
+import com.sequenceiq.cloudbreak.endpoint.HostEndpoint;
+import com.sequenceiq.cloudbreak.endpoint.HttpsServiceEndpoint;
+import com.sequenceiq.cloudbreak.endpoint.ServiceEndpoint;
+import com.sequenceiq.cloudbreak.endpoint.ServiceEndpointFinder;
+import com.sequenceiq.cloudbreak.endpoint.ServiceEndpointLookupException;
+import com.sequenceiq.cloudbreak.endpoint.ServiceEndpointRequest;
+import com.sequenceiq.cloudbreak.endpoint.ServiceFamily;
+
 public class GatewayConfig {
 
     // Used by cloudbreak to connect the cluster
@@ -60,6 +72,16 @@ public class GatewayConfig {
         this.primary = primary;
         this.saltSignPrivateKey = saltSignPrivateKey;
         this.saltSignPublicKey = saltSignPublicKey;
+    }
+
+    private GatewayConfig(GatewayConfig gatewayConfig, @Nonnull ServiceEndpoint serviceEndpoint) {
+        this(serviceEndpoint.getHostEndpoint().getHostAddressString(), gatewayConfig.publicAddress, gatewayConfig.privateAddress,
+                gatewayConfig.hostname, Objects.requireNonNull(serviceEndpoint.getPort().orElse(null), "serviceEndpoint port unspecified"),
+                gatewayConfig.instanceId,
+                gatewayConfig.serverCert, gatewayConfig.clientCert, gatewayConfig.clientKey,
+                gatewayConfig.saltPassword, gatewayConfig.saltBootPassword, gatewayConfig.signatureKey,
+                gatewayConfig.knoxGatewayEnabled, gatewayConfig.primary,
+                gatewayConfig.saltSignPrivateKey, gatewayConfig.saltSignPublicKey);
     }
 
     public String getConnectionAddress() {
@@ -124,6 +146,47 @@ public class GatewayConfig {
 
     public String getSaltSignPublicKey() {
         return saltSignPublicKey;
+    }
+
+    /**
+     * Returns a gateway config for the NGINX service on the gateway.
+     * The returned gateway config is identical to this one, except that
+     * its connection address and gateway port (and hence gateway URL)
+     * are determined using the specified service endpoint finder.
+     *
+     * @param serviceEndpointFinder  the service endpoint finder
+     * @return a gateway config for the NGINX service on the gateway
+     * @throws ServiceEndpointLookupException if an exception occurs looking up the endpoint
+     * @throws InterruptedException           if the lookup is interrupted
+     */
+    public GatewayConfig getGatewayConfig(ServiceEndpointFinder serviceEndpointFinder)
+            throws ServiceEndpointLookupException, InterruptedException {
+        return new GatewayConfig(this, getServiceEndpoint(serviceEndpointFinder));
+    }
+
+    /**
+     * Returns a service endpoint for the NGINX service on the gateway.
+     *
+     * @param serviceEndpointFinder  the service endpoint finder
+     * @return a service endpoint for the NGINX service on the gateway
+     * @throws ServiceEndpointLookupException if an exception occurs looking up the endpoint
+     * @throws InterruptedException           if the lookup is interrupted
+     */
+    private HttpsServiceEndpoint getServiceEndpoint(ServiceEndpointFinder serviceEndpointFinder)
+            throws ServiceEndpointLookupException, InterruptedException {
+        ServiceEndpointRequest<HttpsServiceEndpoint> serviceEndpointRequest =
+                createServiceEndpointRequest();
+        return serviceEndpointFinder.getServiceEndpoint(serviceEndpointRequest);
+    }
+
+    /**
+     * Creates a service endpoint request for connecting to the NGINX service on the gateway.
+     *
+     * @return a service endpoint request for connecting to the specified service on the gateway
+     */
+    private ServiceEndpointRequest<HttpsServiceEndpoint> createServiceEndpointRequest() {
+        return ServiceEndpointRequest.createDefaultServiceEndpointRequest(
+                instanceId, new HostEndpoint(connectionAddress), ServiceFamily.NGINX);
     }
 
     @Override
