@@ -13,13 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ResourceLoaderAware;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.retry.annotation.EnableRetry;
-
-import com.sequenceiq.cloudbreak.auth.uaa.IdentityClient;
-import com.sequenceiq.cloudbreak.client.ConfigKey;
 
 // import java.util.ArrayList;
 // import java.util.Collection;
@@ -269,10 +265,6 @@ public class AppConfig implements ResourceLoaderAware {
     // }
 
     // needed by RemoteTokenConfig
-    @Bean
-    public IdentityClient identityClient() {
-        return new IdentityClient(identityServerUrl, clientId, new ConfigKey(certificateValidation, restDebug, ignorePreValidation));
-    }
 
     // @Bean
     // public Client restClient() {

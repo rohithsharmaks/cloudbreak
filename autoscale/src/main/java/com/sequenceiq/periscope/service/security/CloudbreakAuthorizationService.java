@@ -7,18 +7,22 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import com.sequenceiq.cloudbreak.client.CloudbreakIdentityClient;
+import com.sequenceiq.cloudbreak.auth.altus.InternalCrnBuilder;
+import com.sequenceiq.cloudbreak.client.CloudbreakUserCrnClient;
 
 @Service
 @Lazy
 public class CloudbreakAuthorizationService {
 
     @Inject
-    private CloudbreakIdentityClient cloudbreakClient;
+    private CloudbreakUserCrnClient cloudbreakClient;
+
+    @Inject
+    private InternalCrnBuilder internalCrnBuilder;
 
     @Cacheable(cacheNames = "stackAccessByUserIdAndTenantCache")
     public void hasAccess(Long stackId, String userId, String tenant, String permission) {
-        if (!cloudbreakClient.autoscaleEndpoint().authorizeForAutoscale(stackId, userId, tenant, permission).isSuccess()) {
+        if (!cloudbreakClient.withCrn(internalCrnBuilder.getInternalCrnForServiceAsString()).autoscaleEndpoint().authorizeForAutoscale(stackId, userId, tenant, permission).isSuccess()) {
             throw new AccessDeniedException(String.format("Accessing to stack '%s' is not allowed for '%s' in '%s'", stackId, userId, tenant));
         }
     }

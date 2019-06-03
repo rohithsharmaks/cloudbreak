@@ -38,6 +38,7 @@ public class CloudbreakUserCrnClient extends AbstractUserCrnServiceClient<Cloudb
         return new CloudbreakEndpoint(getWebTarget(), crn);
     }
 
+
     public static class CloudbreakEndpoint extends AbstractUserCrnServiceEndpoint {
         public CloudbreakEndpoint(WebTarget webTarget, String crn) {
             super(webTarget, crn);

@@ -13,7 +13,8 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.autoscales.request.InstanceGrou
 import com.sequenceiq.cloudbreak.api.endpoint.v4.autoscales.request.UpdateStackV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.HostGroupAdjustmentV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.UpdateClusterV4Request;
-import com.sequenceiq.cloudbreak.client.CloudbreakIdentityClient;
+import com.sequenceiq.cloudbreak.auth.altus.InternalCrnBuilder;
+import com.sequenceiq.cloudbreak.client.CloudbreakUserCrnClient;
 import com.sequenceiq.cloudbreak.common.type.ScalingHardLimitsService;
 import com.sequenceiq.cloudbreak.logger.MDCBuilder;
 import com.sequenceiq.periscope.api.model.ScalingStatus;
@@ -42,7 +43,10 @@ public class ScalingRequest implements Runnable {
     private final ScalingPolicy policy;
 
     @Inject
-    private CloudbreakIdentityClient cloudbreakClient;
+    private CloudbreakUserCrnClient cloudbreakClient;
+
+    @Inject
+    private InternalCrnBuilder internalCrnBuilder;
 
     @Inject
     private HistoryService historyService;
@@ -93,14 +97,14 @@ public class ScalingRequest implements Runnable {
         ScalingStatus scalingStatus = null;
         try {
             LOGGER.debug("Sending request to add {} instance(s) into host group '{}', triggered policy '{}'", scalingAdjustment, hostGroup, policy.getName());
-            Long stackId = cloudbreakClient.autoscaleEndpoint().getStackForAmbari(ambariAddressJson).getId();
+            Long stackId = cloudbreakClient.withCrn(internalCrnBuilder.getInternalCrnForServiceAsString()).autoscaleEndpoint().getStackForAmbari(ambariAddressJson).getId();
             UpdateStackV4Request updateStackJson = new UpdateStackV4Request();
             updateStackJson.setWithClusterEvent(true);
             InstanceGroupAdjustmentV4Request instanceGroupAdjustmentJson = new InstanceGroupAdjustmentV4Request();
             instanceGroupAdjustmentJson.setScalingAdjustment(scalingAdjustment);
             instanceGroupAdjustmentJson.setInstanceGroup(hostGroup);
             updateStackJson.setInstanceGroupAdjustment(instanceGroupAdjustmentJson);
-            cloudbreakClient.autoscaleEndpoint().putStack(stackId, cluster.getClusterPertain().getUserId(), updateStackJson);
+            cloudbreakClient.withCrn(internalCrnBuilder.getInternalCrnForServiceAsString()).autoscaleEndpoint().putStack(stackId, cluster.getClusterPertain().getUserId(), updateStackJson);
             scalingStatus = ScalingStatus.SUCCESS;
             statusReason = "Upscale successfully triggered";
             metricService.incrementMetricCounter(MetricType.CLUSTER_UPSCALE_SUCCESSFUL);
@@ -124,14 +128,14 @@ public class ScalingRequest implements Runnable {
         ScalingStatus scalingStatus = null;
         try {
             LOGGER.debug("Sending request to remove {} node(s) from host group '{}', triggered policy '{}'", scalingAdjustment, hostGroup, policy.getName());
-            Long stackId = cloudbreakClient.autoscaleEndpoint().getStackForAmbari(ambariAddressJson).getId();
+            Long stackId = cloudbreakClient.withCrn(internalCrnBuilder.getInternalCrnForServiceAsString()).autoscaleEndpoint().getStackForAmbari(ambariAddressJson).getId();
             UpdateClusterV4Request updateClusterJson = new UpdateClusterV4Request();
             HostGroupAdjustmentV4Request hostGroupAdjustmentJson = new HostGroupAdjustmentV4Request();
             hostGroupAdjustmentJson.setScalingAdjustment(scalingAdjustment);
             hostGroupAdjustmentJson.setWithStackUpdate(true);
             hostGroupAdjustmentJson.setHostGroup(hostGroup);
             updateClusterJson.setHostGroupAdjustment(hostGroupAdjustmentJson);
-            cloudbreakClient.autoscaleEndpoint().putCluster(stackId, cluster.getClusterPertain().getUserId(), updateClusterJson);
+            cloudbreakClient.withCrn(internalCrnBuilder.getInternalCrnForServiceAsString()).autoscaleEndpoint().putCluster(stackId, cluster.getClusterPertain().getUserId(), updateClusterJson);
             scalingStatus = ScalingStatus.SUCCESS;
             statusReason = "Downscale successfully triggered";
             metricService.incrementMetricCounter(MetricType.CLUSTER_DOWNSCALE_SUCCESSFUL);

@@ -20,7 +20,6 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import com.cloudera.thunderhead.service.usermanagement.UserManagementProto;
 import com.sequenceiq.cloudbreak.auth.altus.GrpcUmsClient;
 import com.sequenceiq.cloudbreak.auth.altus.exception.UmsAuthenticationException;
-import com.sequenceiq.cloudbreak.auth.uaa.IdentityClient;
 import com.sequenceiq.cloudbreak.util.FileReaderUtils;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -34,9 +33,6 @@ public class CachedRemoteTokenServiceTest {
     private String crn = "crn:altus:iam:us-west-1:9d74eee4-cad1-45d7-b645-7ccf9edbb73d:user:f3b8abcde-e712-4f89-1234-be07183720d3";
 
     @Mock
-    private IdentityClient identityClient;
-
-    @Mock
     private GrpcUmsClient umsClient;
 
     public CachedRemoteTokenServiceTest() throws IOException {
@@ -48,8 +44,7 @@ public class CachedRemoteTokenServiceTest {
         when(umsClient.getUserDetails(anyString(), anyString(), any(Optional.class))).thenThrow(new UmsAuthenticationException("Invalid CRN provided"));
         thrown.expect(InvalidTokenException.class);
         thrown.expectMessage("Invalid CRN provided");
-        CachedRemoteTokenService tokenService = new CachedRemoteTokenService("clientId", "clientSecret",
-                "http://localhost:8089", umsClient, identityClient);
+        CachedRemoteTokenService tokenService = new CachedRemoteTokenService(umsClient);
         tokenService.loadAuthentication(crn);
     }
 
@@ -57,8 +52,7 @@ public class CachedRemoteTokenServiceTest {
     public void whenNullTokenIsProvidedThrowInvalidTokenException() {
         thrown.expect(InvalidTokenException.class);
         thrown.expectMessage("Invalid JWT token");
-        CachedRemoteTokenService tokenService = new CachedRemoteTokenService("clientId", "clientSecret",
-                "http://localhost:8089", umsClient, identityClient);
+        CachedRemoteTokenService tokenService = new CachedRemoteTokenService(umsClient);
         tokenService.loadAuthentication(null);
     }
 
@@ -68,8 +62,7 @@ public class CachedRemoteTokenServiceTest {
                 .setCrn(crn)
                 .setEmail("hansolo@cloudera.com").build();
         when(umsClient.getUserDetails(anyString(), anyString(), any(Optional.class))).thenReturn(user);
-        CachedRemoteTokenService tokenService = new CachedRemoteTokenService("clientId", "clientSecret",
-                "http://localhost:8089", umsClient, identityClient);
+        CachedRemoteTokenService tokenService = new CachedRemoteTokenService(umsClient);
         OAuth2Authentication authentication = (OAuth2Authentication) tokenService.loadAuthentication(crn);
         assertEquals("hansolo@cloudera.com", authentication.getPrincipal());
     }
@@ -78,9 +71,9 @@ public class CachedRemoteTokenServiceTest {
     public void testCrnBasedAuth() {
         when(umsClient.getUserDetails(anyString(), anyString(), any(Optional.class))).thenThrow(new NullPointerException());
         thrown.expect(InvalidTokenException.class);
+        thrown.expectMessage("Invalid CRN provided");
+        CachedRemoteTokenService tokenService = new CachedRemoteTokenService(umsClient);
         thrown.expectMessage("Cannot authenticate, please check logs for further details!");
-        CachedRemoteTokenService tokenService = new CachedRemoteTokenService("clientId", "clientSecret",
-                "http://localhost:8089", umsClient, identityClient);
         tokenService.loadAuthentication(crn);
     }
 
@@ -89,17 +82,14 @@ public class CachedRemoteTokenServiceTest {
         thrown.expect(InvalidTokenException.class);
         thrown.expectMessage("invalid_token");
         String oauthToken = FileReaderUtils.readFileFromClasspath("oauth_token.txt");
-        when(identityClient.loadAuthentication(oauthToken, "clientSecret")).thenThrow(new InvalidTokenException("invalid_token"));
-        CachedRemoteTokenService tokenService = new CachedRemoteTokenService("clientId", "clientSecret",
-                "http://localhost:8089", umsClient, identityClient);
+        CachedRemoteTokenService tokenService = new CachedRemoteTokenService(umsClient);
         tokenService.loadAuthentication(oauthToken);
     }
 
     @Test
     public void testLoadAuthenticationWithOauthValidKey() throws IOException {
         String oauthToken = FileReaderUtils.readFileFromClasspath("oauth_token.txt");
-        CachedRemoteTokenService tokenService = new CachedRemoteTokenService("clientId", "clientSecret",
-                "http://localhost:8089", umsClient, identityClient);
+        CachedRemoteTokenService tokenService = new CachedRemoteTokenService(umsClient);
         tokenService.loadAuthentication(oauthToken);
     }
 
