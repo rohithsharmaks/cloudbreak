@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.StackV4Request;
 import com.sequenceiq.cloudbreak.auth.altus.Crn;
 import com.sequenceiq.cloudbreak.auth.altus.CrnParseException;
+import com.sequenceiq.cloudbreak.client.CloudbreakUserCrnClient;
 import com.sequenceiq.cloudbreak.common.json.Json;
 import com.sequenceiq.cloudbreak.common.json.JsonUtil;
 import com.sequenceiq.cloudbreak.exception.NotFoundException;
@@ -35,6 +36,9 @@ public class SdxService {
 
     @Inject
     private SdxReactorFlowManager sdxReactorFlowManager;
+
+    @Inject
+    private CloudbreakUserCrnClient cloudbreakClient;
 
     public SdxCluster getById(Long id) {
         Optional<SdxCluster> sdxClusters = sdxClusterRepository.findById(id);
@@ -72,22 +76,32 @@ public class SdxService {
         sdxCluster.setStatus(SdxClusterStatus.REQUESTED);
         sdxCluster.setAccessCidr(sdxClusterRequest.getAccessCidr());
         sdxCluster.setClusterShape(sdxClusterRequest.getClusterShape());
-        try {
-            if (stackV4Request != null) {
-                sdxCluster.setStackRequest(JsonUtil.writeValueAsString(stackV4Request));
-            }
-        } catch (JsonProcessingException e) {
-            LOGGER.info("Can not parse stack request");
-            throw new BadRequestException("Can not parse stack request", e);
-        }
-        try {
-            sdxCluster.setTags(new Json(sdxClusterRequest.getTags()));
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Can not convert tags", e);
-        }
+        setStackRequest(stackV4Request, sdxCluster);
+        setTags(sdxClusterRequest, sdxCluster);
         sdxCluster.setInitiatorUserCrn(userCrn);
         sdxCluster.setEnvName(sdxClusterRequest.getEnvironment());
 
+        checkClusterExistence(sdxName, sdxCluster);
+        checkEnvironment(userCrn, sdxCluster);
+
+        sdxCluster = sdxClusterRepository.save(sdxCluster);
+
+        LOGGER.info("trigger SDX creation: {}", sdxCluster);
+        sdxReactorFlowManager.triggerSdxCreation(sdxCluster.getId());
+
+        return sdxCluster;
+    }
+
+    private void checkEnvironment(String userCrn, SdxCluster sdxCluster) {
+        try {
+            cloudbreakClient.withCrn(userCrn).environmentV4Endpoint().get(0L, sdxCluster.getEnvName());
+        } catch (Exception e) {
+            LOGGER.info("Environment not found {}.", sdxCluster.getEnvName());
+            throw new BadRequestException("Environment not found.");
+        }
+    }
+
+    private void checkClusterExistence(String sdxName, SdxCluster sdxCluster) {
         sdxClusterRepository.findByAccountIdAndClusterNameAndDeletedIsNull(sdxCluster.getAccountId(), sdxCluster.getClusterName())
                 .ifPresent(foundSdx -> {
                     throw new BadRequestException("SDX cluster exists with this name: " + sdxName);
@@ -97,13 +111,25 @@ public class SdxService {
                 .ifPresent(existedSdx -> {
             throw new BadRequestException("SDX cluster exists for environment name: " + existedSdx.getEnvName());
         });
+    }
 
-        sdxCluster = sdxClusterRepository.save(sdxCluster);
+    private void setTags(SdxClusterRequest sdxClusterRequest, SdxCluster sdxCluster) {
+        try {
+            sdxCluster.setTags(new Json(sdxClusterRequest.getTags()));
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Can not convert tags", e);
+        }
+    }
 
-        LOGGER.info("trigger SDX creation: {}", sdxCluster);
-        sdxReactorFlowManager.triggerSdxCreation(sdxCluster.getId());
-
-        return sdxCluster;
+    private void setStackRequest(StackV4Request stackV4Request, SdxCluster sdxCluster) {
+        try {
+            if (stackV4Request != null) {
+                sdxCluster.setStackRequest(JsonUtil.writeValueAsString(stackV4Request));
+            }
+        } catch (JsonProcessingException e) {
+            LOGGER.info("Can not parse stack request");
+            throw new BadRequestException("Can not parse stack request", e);
+        }
     }
 
     public List<SdxCluster> listSdx(String userCrn, String envName) {

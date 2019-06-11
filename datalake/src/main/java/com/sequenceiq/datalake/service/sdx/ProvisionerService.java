@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.dyngr.Polling;
+import com.dyngr.core.AttemptResult;
 import com.dyngr.core.AttemptResults;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.common.Status;
@@ -56,124 +57,122 @@ public class ProvisionerService {
     private String clusterDefinition;
 
     public void startStackDeletion(Long id) {
-        sdxClusterRepository.findById(id).ifPresentOrElse(sdxCluster -> {
-            try {
-                cloudbreakClient.withCrn(sdxCluster.getInitiatorUserCrn())
-                        .stackV4Endpoint()
-                        .delete(0L, sdxCluster.getClusterName(), false, false);
-            } catch (NotFoundException e) {
-                LOGGER.info("Can not find stack on cloudbreak side {}", sdxCluster.getClusterName());
-            } catch (ClientErrorException e) {
-                LOGGER.info("Can not delete stack from cloudbreak: {}", sdxCluster.getClusterName(), e);
-                throw new RuntimeException("Can not delete stack, client error happened");
-            }
-        }, () -> {
-            throw new BadRequestException("Can not find SDX cluster by ID: " + id);
-        });
+        sdxClusterRepository.findById(id).ifPresentOrElse(sdxCluster -> callStackDeletion(sdxCluster), () -> handleMissingCluster(id));
     }
 
     public void waitCloudbreakClusterDeletion(Long id, PollingConfig pollingConfig) {
-        sdxClusterRepository.findById(id).ifPresentOrElse(sdxCluster -> {
-            Polling.waitPeriodly(pollingConfig.getSleepTime(), pollingConfig.getSleepTimeUnit())
-                    .stopAfterDelay(pollingConfig.getDuration(), pollingConfig.getDurationTimeUnit())
-                    .run(() -> {
-                        LOGGER.info("Deletion polling cloudbreak for stack status: '{}' in '{}' env", sdxCluster.getClusterName(), sdxCluster.getEnvName());
-                        try {
-                            StackV4Response stackV4Response = cloudbreakClient.withCrn(sdxCluster.getInitiatorUserCrn())
-                                    .stackV4Endpoint()
-                                    .get(0L, sdxCluster.getClusterName(), Collections.emptySet());
-                            LOGGER.info("Response from cloudbreak: {}", JsonUtil.writeValueAsString(stackV4Response));
-                            if (Status.DELETE_FAILED.equals(stackV4Response.getStatus())) {
-                                return AttemptResults.breakFor("Stack deletion failed " + sdxCluster.getClusterName());
-                            } else {
-                                return AttemptResults.justContinue();
-                            }
-                        } catch (NotFoundException e) {
-                            return AttemptResults.finishWith(null);
-                        }
-                    });
-            sdxCluster.setStatus(SdxClusterStatus.DELETED);
-            sdxCluster.setDeleted(clock.getCurrentTimeMillis());
-            sdxClusterRepository.save(sdxCluster);
-        }, () -> {
-            throw new BadRequestException("Can not find SDX cluster by ID: " + id);
-        });
+        sdxClusterRepository.findById(id).ifPresentOrElse(sdxCluster -> executeWaitForDeletionFlow(pollingConfig, sdxCluster), () -> handleMissingCluster(id));
     }
 
     public void startStackProvisioning(Long id) {
-        sdxClusterRepository.findById(id).ifPresentOrElse(sdxCluster -> {
-            StackV4Request stackV4Request = setupStackRequestForCloudbreak(sdxCluster);
-
-            LOGGER.info("Call cloudbreak with stackrequest");
-            try {
-                sdxCluster.setStackRequestToCloudbreak(JsonUtil.writeValueAsString(stackV4Request));
-                StackV4Response stackV4Response = cloudbreakClient.withCrn(sdxCluster.getInitiatorUserCrn())
-                        .stackV4Endpoint()
-                        .post(0L, stackV4Request);
-                sdxCluster.setStackId(stackV4Response.getId());
-                sdxCluster.setStatus(SdxClusterStatus.REQUESTED_FROM_CLOUDBREAK);
-                sdxClusterRepository.save(sdxCluster);
-                LOGGER.info("Sdx cluster updated");
-            } catch (ClientErrorException e) {
-                LOGGER.info("Can not start provisioning", e);
-                throw new RuntimeException("Can not start provisioning, client error happened", e);
-            } catch (JsonProcessingException e) {
-                LOGGER.info("Can not write stackrequest to json");
-                throw new RuntimeException("Can not write stackrequest to json", e);
-            }
-        }, () -> {
-            throw new BadRequestException("Can not find SDX cluster by ID: " + id);
-        });
+        sdxClusterRepository.findById(id).ifPresentOrElse(sdxCluster -> callStackCreation(sdxCluster), () -> handleMissingCluster(id));
     }
 
     public void waitCloudbreakClusterCreation(Long id, PollingConfig pollingConfig) {
-        sdxClusterRepository.findById(id).ifPresentOrElse(sdxCluster -> {
-            Polling.waitPeriodly(pollingConfig.getSleepTime(), pollingConfig.getSleepTimeUnit())
-                    .stopAfterDelay(pollingConfig.getDuration(), pollingConfig.getDurationTimeUnit())
-                    .run(() -> {
-                        LOGGER.info("Creation polling cloudbreak for stack status: '{}' in '{}' env", sdxCluster.getClusterName(), sdxCluster.getEnvName());
-                        StackV4Response stackV4Response = cloudbreakClient.withCrn(sdxCluster.getInitiatorUserCrn())
-                                .stackV4Endpoint()
-                                .get(0L, sdxCluster.getClusterName(), Collections.emptySet());
-                        LOGGER.info("Response from cloudbreak: {}", JsonUtil.writeValueAsString(stackV4Response));
-                        ClusterV4Response cluster = stackV4Response.getCluster();
-                        if (stackV4Response.getStatus().isAvailable()
-                                && cluster != null
-                                && cluster.getStatus() != null
-                                && cluster.getStatus().isAvailable()) {
-                            return AttemptResults.finishWith(stackV4Response);
-                        } else {
-                            if (Status.CREATE_FAILED.equals(stackV4Response.getStatus())) {
-                                return AttemptResults.breakFor("Stack creation failed " + sdxCluster.getClusterName());
-                            } else {
-                                return AttemptResults.justContinue();
-                            }
-                        }
-                    });
-            sdxCluster.setStatus(SdxClusterStatus.RUNNING);
+        sdxClusterRepository.findById(id).ifPresentOrElse(sdxCluster -> executeWaitForCreationFlow(pollingConfig, sdxCluster), () -> handleMissingCluster(id));
+    }
+
+    private void handleMissingCluster(Long id) {
+        throw new BadRequestException("Can not find SDX cluster by ID: " + id);
+    }
+
+    private void callStackDeletion(SdxCluster sdxCluster) {
+        try {
+            cloudbreakClient.withCrn(sdxCluster.getInitiatorUserCrn())
+                    .stackV4Endpoint()
+                    .delete(0L, sdxCluster.getClusterName(), false, false);
+        } catch (NotFoundException e) {
+            LOGGER.info("Can not find stack on cloudbreak side {}", sdxCluster.getClusterName());
+        } catch (ClientErrorException e) {
+            LOGGER.info("Can not delete stack from cloudbreak: {}", sdxCluster.getClusterName(), e);
+            throw new RuntimeException("Can not delete stack, client error happened");
+        }
+    }
+
+    private void executeWaitForDeletionFlow(PollingConfig pollingConfig, SdxCluster sdxCluster) {
+        Polling.waitPeriodly(pollingConfig.getSleepTime(), pollingConfig.getSleepTimeUnit())
+                .stopAfterDelay(pollingConfig.getDuration(), pollingConfig.getDurationTimeUnit())
+                .run(() -> checkStackStateDuringDeletionFlow(sdxCluster));
+        sdxCluster.setStatus(SdxClusterStatus.DELETED);
+        sdxCluster.setDeleted(clock.getCurrentTimeMillis());
+        sdxClusterRepository.save(sdxCluster);
+    }
+
+    private AttemptResult<Object> checkStackStateDuringDeletionFlow(SdxCluster sdxCluster) throws JsonProcessingException {
+        LOGGER.info("Deletion polling cloudbreak for stack status: '{}' in '{}' env", sdxCluster.getClusterName(), sdxCluster.getEnvName());
+        try {
+            StackV4Response stackV4Response = cloudbreakClient.withCrn(sdxCluster.getInitiatorUserCrn())
+                    .stackV4Endpoint()
+                    .get(0L, sdxCluster.getClusterName(), Collections.emptySet());
+            LOGGER.info("Response from cloudbreak: {}", JsonUtil.writeValueAsString(stackV4Response));
+            if (Status.DELETE_FAILED.equals(stackV4Response.getStatus())) {
+                return AttemptResults.breakFor("Stack deletion failed " + sdxCluster.getClusterName());
+            } else {
+                return AttemptResults.justContinue();
+            }
+        } catch (NotFoundException e) {
+            return AttemptResults.finishWith(null);
+        }
+    }
+
+    private void callStackCreation(SdxCluster sdxCluster) {
+        StackV4Request stackV4Request = setupStackRequestForCloudbreak(sdxCluster);
+
+        LOGGER.info("Call cloudbreak with stackrequest");
+        try {
+            sdxCluster.setStackRequestToCloudbreak(JsonUtil.writeValueAsString(stackV4Request));
+            StackV4Response stackV4Response = cloudbreakClient.withCrn(sdxCluster.getInitiatorUserCrn())
+                    .stackV4Endpoint()
+                    .post(0L, stackV4Request);
+            sdxCluster.setStackId(stackV4Response.getId());
+            sdxCluster.setStatus(SdxClusterStatus.REQUESTED_FROM_CLOUDBREAK);
             sdxClusterRepository.save(sdxCluster);
-        }, () -> {
-            throw new BadRequestException("Can not find SDX cluster by ID: " + id);
-        });
+            LOGGER.info("Sdx cluster updated");
+        } catch (ClientErrorException e) {
+            LOGGER.info("Can not start provisioning", e);
+            throw new RuntimeException("Can not start provisioning, client error happened", e);
+        } catch (JsonProcessingException e) {
+            LOGGER.info("Can not write stackrequest to json");
+            throw new RuntimeException("Can not write stackrequest to json", e);
+        }
+    }
+
+    private void executeWaitForCreationFlow(PollingConfig pollingConfig, SdxCluster sdxCluster) {
+        Polling.waitPeriodly(pollingConfig.getSleepTime(), pollingConfig.getSleepTimeUnit())
+                .stopAfterDelay(pollingConfig.getDuration(), pollingConfig.getDurationTimeUnit())
+                .run(() -> checkStackStateDuringCreationFlow(sdxCluster));
+        sdxCluster.setStatus(SdxClusterStatus.RUNNING);
+        sdxClusterRepository.save(sdxCluster);
+    }
+
+    private AttemptResult<StackV4Response> checkStackStateDuringCreationFlow(SdxCluster sdxCluster) throws JsonProcessingException {
+        LOGGER.info("Creation polling cloudbreak for stack status: '{}' in '{}' env", sdxCluster.getClusterName(), sdxCluster.getEnvName());
+        StackV4Response stackV4Response = cloudbreakClient.withCrn(sdxCluster.getInitiatorUserCrn())
+                .stackV4Endpoint()
+                .get(0L, sdxCluster.getClusterName(), Collections.emptySet());
+        LOGGER.info("Response from cloudbreak: {}", JsonUtil.writeValueAsString(stackV4Response));
+        ClusterV4Response cluster = stackV4Response.getCluster();
+        if (stackV4Response.getStatus().isAvailable()
+                && cluster != null
+                && cluster.getStatus() != null
+                && cluster.getStatus().isAvailable()) {
+            return AttemptResults.finishWith(stackV4Response);
+        } else {
+            if (Status.CREATE_FAILED.equals(stackV4Response.getStatus())) {
+                return AttemptResults.breakFor("Stack creation failed " + sdxCluster.getClusterName());
+            } else {
+                return AttemptResults.justContinue();
+            }
+        }
     }
 
     private StackV4Request setupStackRequestForCloudbreak(SdxCluster sdxCluster) {
-
-        String clusterTemplateJson;
-        if (sdxCluster.getStackRequest() == null) {
-            clusterTemplateJson = FileReaderUtils.readFileFromClasspathQuietly("sdx/" + "cluster-template.json");
-        } else {
-            clusterTemplateJson = sdxCluster.getStackRequest();
-        }
+        String clusterTemplateJson = createClusterTemplateJson(sdxCluster);
         try {
             StackV4Request stackRequest = JsonUtil.readValue(clusterTemplateJson, StackV4Request.class);
             stackRequest.setName(sdxCluster.getClusterName());
             TagsV4Request tags = new TagsV4Request();
-            try {
-                tags.setUserDefined(sdxCluster.getTags().get(HashMap.class));
-            } catch (IOException e) {
-                throw new BadRequestException("can not convert from json to tags");
-            }
+            setUserDefinedTags(sdxCluster, tags);
             stackRequest.setTags(tags);
             EnvironmentSettingsV4Request environment = new EnvironmentSettingsV4Request();
             environment.setName(sdxCluster.getEnvName());
@@ -184,6 +183,24 @@ public class ProvisionerService {
         } catch (IOException e) {
             LOGGER.error("Can not parse json to stack request");
             throw new IllegalStateException("Can not parse json to stack request", e);
+        }
+    }
+
+    private String createClusterTemplateJson(SdxCluster sdxCluster) {
+        String clusterTemplateJson;
+        if (sdxCluster.getStackRequest() == null) {
+            clusterTemplateJson = FileReaderUtils.readFileFromClasspathQuietly("sdx/" + "cluster-template.json");
+        } else {
+            clusterTemplateJson = sdxCluster.getStackRequest();
+        }
+        return clusterTemplateJson;
+    }
+
+    private void setUserDefinedTags(SdxCluster sdxCluster, TagsV4Request tags) {
+        try {
+            tags.setUserDefined(sdxCluster.getTags().get(HashMap.class));
+        } catch (IOException e) {
+            throw new BadRequestException("can not convert from json to tags");
         }
     }
 
