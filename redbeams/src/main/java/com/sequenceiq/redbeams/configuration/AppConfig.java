@@ -12,6 +12,7 @@ import javax.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,9 @@ import org.springframework.retry.annotation.EnableRetry;
 
 import com.sequenceiq.cloudbreak.auth.uaa.IdentityClient;
 import com.sequenceiq.cloudbreak.client.ConfigKey;
+import com.sequenceiq.redbeams.filter.RequestIdFilter;
+import com.sequenceiq.redbeams.filter.RequestIdGeneratingFilter;
+import com.sequenceiq.redbeams.service.ThreadBasedRequestIdProvider;
 
 // import java.util.ArrayList;
 // import java.util.Collection;
@@ -35,7 +39,6 @@ import com.sequenceiq.cloudbreak.client.ConfigKey;
 // import javax.ws.rs.client.Client;
 // import org.springframework.boot.env.PropertySourceLoader;
 // import org.springframework.boot.env.YamlPropertySourceLoader;
-// import org.springframework.boot.web.servlet.FilterRegistrationBean;
 // import org.springframework.core.env.ConfigurableEnvironment;
 // import org.springframework.core.env.PropertySource;
 // import org.springframework.core.io.Resource;
@@ -73,6 +76,14 @@ import com.sequenceiq.cloudbreak.client.ConfigKey;
 public class AppConfig implements ResourceLoaderAware {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
+
+    // from com.sequenceiq.cloudbreak.auth.filter.AuthFilterConfiguration
+    // redbeams should probably control this itself
+    // private static final int BEAN_ORDER_CRN_FILTER = 0;
+
+    private static final int BEAN_ORDER_REQUEST_ID_GENERATING_FILTER = 100;
+
+    private static final int BEAN_ORDER_REQUEST_ID_FILTER = 110;
 
     // @Value("${cb.etc.config.dir}")
     // private String etcConfigDir;
@@ -147,6 +158,9 @@ public class AppConfig implements ResourceLoaderAware {
     // @Inject
     // private List<EnvironmentNetworkValidator> environmentNetworkValidators;
 
+    @Inject
+    private ThreadBasedRequestIdProvider threadBasedRequestIdProvider;
+
     private ResourceLoader resourceLoader;
 
     @PostConstruct
@@ -192,6 +206,24 @@ public class AppConfig implements ResourceLoaderAware {
     //     registration.setName("turnOnStackUnderOperationService");
     //     return registration;
     // }
+
+    @Bean
+    public FilterRegistrationBean<RequestIdGeneratingFilter> requestIdGeneratingFilterRegistrationBean() {
+        FilterRegistrationBean<RequestIdGeneratingFilter> registrationBean = new FilterRegistrationBean<>();
+        RequestIdGeneratingFilter filter = new RequestIdGeneratingFilter();
+        registrationBean.setFilter(filter);
+        registrationBean.setOrder(BEAN_ORDER_REQUEST_ID_GENERATING_FILTER);
+        return registrationBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean<RequestIdFilter> requestIdFilterRegistrationBean() {
+        FilterRegistrationBean<RequestIdFilter> registrationBean = new FilterRegistrationBean<>();
+        RequestIdFilter filter = new RequestIdFilter(threadBasedRequestIdProvider);
+        registrationBean.setFilter(filter);
+        registrationBean.setOrder(BEAN_ORDER_REQUEST_ID_FILTER);
+        return registrationBean;
+    }
 
     // @Bean
     // public Map<String, ContainerOrchestrator> containerOrchestrators() {
