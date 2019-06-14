@@ -19,7 +19,9 @@ public class EnvironmentDtoConverter {
     }
 
     public EnvironmentDto environmentToDto(Environment environment) {
-        EnvironmentDto.EnvironmentDtoBuilder builder = EnvironmentDto.EnvironmentDtoBuilder.anEnvironmentDto()
+        EnvironmentDto.Builder builder = EnvironmentDto.builder()
+                .withId(environment.getId())
+                .withResourceCrn(environment.getResourceCrn())
                 .withName(environment.getName())
                 .withDescription(environment.getDescription())
                 .withAccountId(environment.getAccountId())
@@ -29,13 +31,35 @@ public class EnvironmentDtoConverter {
                 .withDeletionTimestamp(environment.getDeletionTimestamp())
                 .withLocationDto(environmentToLocationDto(environment))
                 .withRegions(environment.getRegions())
-                .withId(environment.getId())
-                .withEnvironmentStatus(environment.getStatus());
+                .withEnvironmentStatus(environment.getStatus())
+                .withCreator(environment.getCreator());
         if (environment.getNetwork() != null) {
             builder.withNetwork(environmentNetworkConverterMap.get(CloudPlatform.valueOf(environment.getCloudPlatform()))
                     .convertToDto(environment.getNetwork()));
         }
         return builder.build();
+    }
+
+    public Environment dtoToEnvironment(EnvironmentDto environmentDto) {
+        Environment environment = new Environment();
+        environment.setAccountId(environmentDto.getAccountId());
+        environment.setArchived(environmentDto.isArchived());
+        environment.setCloudPlatform(environmentDto.getCloudPlatform());
+        environment.setCredential(environmentDto.getCredential());
+        environment.setDeletionTimestamp(environmentDto.getDeletionTimestamp());
+        environment.setDescription(environmentDto.getDescription());
+        environment.setId(environmentDto.getId());
+        environment.setLatitude(environmentDto.getLocation().getLatitude());
+        environment.setLocation(environmentDto.getLocation().getName());
+        environment.setLocationDisplayName(environmentDto.getLocation().getDisplayName());
+        environment.setLongitude(environmentDto.getLocation().getLongitude());
+        environment.setName(environmentDto.getName());
+        environment.setNetwork(environmentNetworkConverterMap.get(
+                CloudPlatform.valueOf(environmentDto.getCloudPlatform())).convert(environmentDto));
+        environment.setResourceCrn(environmentDto.getResourceCrn());
+        environment.setStatus(environmentDto.getStatus());
+        environment.setCreator(environmentDto.getCreator());
+        return environment;
     }
 
     public Environment creationDtoToEnvironment(EnvironmentCreationDto creationDto) {

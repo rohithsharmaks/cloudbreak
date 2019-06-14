@@ -5,6 +5,7 @@ import java.util.Set;
 import com.sequenceiq.environment.api.v1.environment.model.response.EnvironmentNetworkResponse;
 import com.sequenceiq.environment.environment.domain.Environment;
 import com.sequenceiq.environment.environment.domain.EnvironmentView;
+import com.sequenceiq.environment.environment.dto.EnvironmentDto;
 import com.sequenceiq.environment.network.domain.BaseNetwork;
 import com.sequenceiq.environment.network.dto.NetworkDto;
 
@@ -15,6 +16,20 @@ public abstract class EnvironmentBaseNetworkConverter implements EnvironmentNetw
         BaseNetwork result = createProviderSpecificNetwork(network);
         result.setName(environment.getName());
         EnvironmentView environmentView = convertEnvToView(environment);
+        result.setEnvironments(Set.of(environmentView));
+        result.setSubnetIds(network.getSubnetIds());
+        result.setSubnetMetas(network.getSubnetMetas());
+        result.setResourceCrn(network.getResourceCrn());
+        return result;
+    }
+
+    @Override
+    public BaseNetwork convert(EnvironmentDto environmentDto) {
+        NetworkDto network = environmentDto.getNetwork();
+        BaseNetwork result = createProviderSpecificNetwork(network);
+        result.setName(environmentDto.getName());
+        EnvironmentView environmentView = convertEnvironmentDtoToEnvironmentView(environmentDto);
+        environmentView.setNetwork(result);
         result.setEnvironments(Set.of(environmentView));
         result.setSubnetIds(network.getSubnetIds());
         result.setSubnetMetas(network.getSubnetMetas());
@@ -62,6 +77,22 @@ public abstract class EnvironmentBaseNetworkConverter implements EnvironmentNetw
         environmentView.setNetwork(environment.getNetwork());
         environmentView.setRegions(environment.getRegions());
         environmentView.setName(environment.getName());
+        return environmentView;
+    }
+
+    private EnvironmentView convertEnvironmentDtoToEnvironmentView(EnvironmentDto environmentDto) {
+        EnvironmentView environmentView = new EnvironmentView();
+        environmentView.setId(environmentDto.getId());
+        environmentView.setAccountId(environmentDto.getAccountId());
+        environmentView.setDescription(environmentDto.getDescription());
+        environmentView.setCloudPlatform(environmentDto.getCloudPlatform());
+        environmentView.setCredential(environmentDto.getCredential());
+        environmentView.setLatitude(environmentDto.getLocation().getLatitude());
+        environmentView.setLongitude(environmentDto.getLocation().getLongitude());
+        environmentView.setLocation(environmentDto.getLocation().getName());
+        environmentView.setLocationDisplayName(environmentDto.getLocation().getDisplayName());
+        environmentView.setRegions(environmentDto.getRegions());
+        environmentView.setName(environmentDto.getName());
         return environmentView;
     }
 

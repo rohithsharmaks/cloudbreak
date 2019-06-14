@@ -18,14 +18,14 @@ public abstract class EnvironmentBaseResponse {
     @ApiModelProperty(ModelDescriptions.DESCRIPTION)
     private String description;
 
-    @ApiModelProperty(EnvironmentModelDescription.REGIONS)
-    private CompactRegionResponse regions;
-
     @ApiModelProperty(EnvironmentModelDescription.CLOUD_PLATFORM)
     private String cloudPlatform;
 
     @ApiModelProperty(EnvironmentModelDescription.CREDENTIAL_RESPONSE)
     private CredentialResponse credential;
+
+    @ApiModelProperty(EnvironmentModelDescription.REGIONS)
+    private CompactRegionResponse regions;
 
     @ApiModelProperty(EnvironmentModelDescription.LOCATION)
     private LocationResponse location;

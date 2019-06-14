@@ -16,21 +16,28 @@ import com.sequenceiq.environment.credential.domain.Credential;
 @Transactional(TxType.REQUIRED)
 public interface CredentialRepository extends JpaRepository<Credential, Long> {
 
-    @Query("SELECT c FROM Credential c WHERE c.accountId= :accountId AND c.name= :name "
+    @Query("SELECT c FROM Credential c WHERE c.accountId = :accountId AND c.name = :name "
             + "AND c.archived IS FALSE AND cloudPlatform IN (:cloudPlatforms)")
     Optional<Credential> findByNameAndAccountId(
             @Param("name") String name,
             @Param("accountId") String accountId,
             @Param("cloudPlatforms") Collection<String> cloudPlatforms);
 
-    @Query("SELECT c FROM Credential c WHERE c.accountId= :accountId AND c.resourceCrn= :crn "
+    @Query("SELECT c FROM Credential c WHERE c.accountId = :accountId AND c.resourceCrn = :crn "
             + "AND c.archived IS FALSE AND cloudPlatform IN (:cloudPlatforms)")
     Optional<Credential> findByCrnAndAccountId(
             @Param("crn") String crn,
             @Param("accountId") String accountId,
             @Param("cloudPlatforms") Collection<String> cloudPlatforms);
 
-    @Query("SELECT c FROM Credential c WHERE c.accountId= :accountId AND c.archived IS FALSE AND cloudPlatform IN (:cloudPlatforms)")
+    @Query(value = "SELECT c FROM Credential c WHERE c.accountId = :accountId AND c.archived IS FALSE AND cloudPlatform IN (:cloudPlatforms) "
+            + "AND c.id = (SELECT e.credential_id FROM Environment e WHERE e.resourceCrn = :envCrn)", nativeQuery = true)
+    Optional<Credential> findByEnvironmentCrnAndAccountId(
+            @Param("envCrn") String envCrn,
+            @Param("accountId") String accountId,
+            @Param("cloudPlatforms") Collection<String> cloudPlatforms);
+
+    @Query("SELECT c FROM Credential c WHERE c.accountId = :accountId AND c.archived IS FALSE AND cloudPlatform IN (:cloudPlatforms)")
     Set<Credential> findAllByAccountId(
             @Param("accountId") String accountId,
             @Param("cloudPlatforms") Collection<String> cloudPlatforms);

@@ -67,8 +67,8 @@ public class NetworkCreationHandler extends EventSenderAwareHandler<EnvironmentD
                     .filter(environment -> Objects.nonNull(environment.getNetwork()) && enabledPlatforms.contains(environment.getCloudPlatform()))
                     .ifPresent(environment -> {
                         environment.setStatus(EnvironmentStatus.NETWORK_CREATION_IN_PROGRESS);
-                        networkService.decorateNetworkWithSubnetMeta(environment.getNetwork().getId(),
-                                getSubnetMetas(environmentDtoConverter.environmentToDto(environment)));
+                        Map<String, CloudSubnet> subnetMetadata = getSubnetMetadata(environment);
+            networkService.decorateNetworkWithSubnetMeta(environment.getNetwork().getId(), subnetMetadata);
                         environmentService.save(environment);
                     });
 
@@ -83,7 +83,7 @@ public class NetworkCreationHandler extends EventSenderAwareHandler<EnvironmentD
         }
     }
 
-    private Map<String, CloudSubnet> getSubnetMetas(EnvironmentDto environmentDto) {
+    private Map<String, CloudSubnet> getSubnetMetadata(EnvironmentDto environmentDto) {
         String regionName = environmentDto.getRegionSet().iterator().next().getName();
         PlatformResourceRequest prr = new PlatformResourceRequest();
         prr.setCredential(environmentDto.getCredential());

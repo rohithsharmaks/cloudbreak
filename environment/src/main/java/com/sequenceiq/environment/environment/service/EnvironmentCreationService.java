@@ -66,7 +66,7 @@ public class EnvironmentCreationService {
                 .build();
         String userCrn = authenticatedUserService.getUserCrn();
         if (userCrn == null) {
-            userCrn = environmentService.getByName(envName, accountId).getCreator();
+            userCrn = environmentService.getByNameAndAccountId(envName, accountId).getCreator();
         }
         Map<String, Object> flowTriggerUsercrn = Map.of(FlowConstants.FLOW_TRIGGER_USERCRN, userCrn);
         eventSender.sendEvent(envCreationEvent, new Event.Headers(flowTriggerUsercrn));

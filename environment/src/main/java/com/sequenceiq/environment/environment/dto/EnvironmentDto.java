@@ -43,7 +43,9 @@ public class EnvironmentDto implements Payload {
 
     private String resourceCrn;
 
-    private EnvironmentStatus environmentStatus;
+    private EnvironmentStatus status;
+
+    private String creator;
 
     @Override
     public Long getResourceId() {
@@ -159,15 +161,27 @@ public class EnvironmentDto implements Payload {
         this.resourceCrn = resourceCrn;
     }
 
-    public EnvironmentStatus getEnvironmentStatus() {
-        return environmentStatus;
+    public EnvironmentStatus getStatus() {
+        return status;
     }
 
-    public void setEnvironmentStatus(EnvironmentStatus environmentStatus) {
-        this.environmentStatus = environmentStatus;
+    public void setStatus(EnvironmentStatus status) {
+        this.status = status;
     }
 
-    public static final class EnvironmentDtoBuilder {
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static final class Builder {
         private Long id;
 
         private LocationDto locationDto;
@@ -196,80 +210,83 @@ public class EnvironmentDto implements Payload {
 
         private EnvironmentStatus environmentStatus;
 
-        private EnvironmentDtoBuilder() {
+        private String creator;
+
+        private Builder() {
         }
 
-        public static EnvironmentDtoBuilder anEnvironmentDto() {
-            return new EnvironmentDtoBuilder();
-        }
-
-        public EnvironmentDtoBuilder withId(Long id) {
+        public Builder withId(Long id) {
             this.id = id;
             return this;
         }
 
-        public EnvironmentDtoBuilder withLocationDto(LocationDto locationDto) {
+        public Builder withLocationDto(LocationDto locationDto) {
             this.locationDto = locationDto;
             return this;
         }
 
-        public EnvironmentDtoBuilder withName(String name) {
+        public Builder withName(String name) {
             this.name = name;
             return this;
         }
 
-        public EnvironmentDtoBuilder withDescription(String description) {
+        public Builder withDescription(String description) {
             this.description = description;
             return this;
         }
 
-        public EnvironmentDtoBuilder withCredential(Credential credential) {
+        public Builder withCredential(Credential credential) {
             this.credential = credential;
             return this;
         }
 
-        public EnvironmentDtoBuilder withCloudPlatform(String cloudPlatform) {
+        public Builder withCloudPlatform(String cloudPlatform) {
             this.cloudPlatform = cloudPlatform;
             return this;
         }
 
-        public EnvironmentDtoBuilder withRegions(Json regions) {
+        public Builder withRegions(Json regions) {
             this.regions = regions;
             return this;
         }
 
-        public EnvironmentDtoBuilder withArchived(boolean archived) {
+        public Builder withArchived(boolean archived) {
             this.archived = archived;
             return this;
         }
 
-        public EnvironmentDtoBuilder withDeletionTimestamp(Long deletionTimestamp) {
+        public Builder withDeletionTimestamp(Long deletionTimestamp) {
             this.deletionTimestamp = deletionTimestamp;
             return this;
         }
 
-        public EnvironmentDtoBuilder withProxyConfigs(Set<ProxyConfig> proxyConfigs) {
+        public Builder withProxyConfigs(Set<ProxyConfig> proxyConfigs) {
             this.proxyConfigs = proxyConfigs;
             return this;
         }
 
-        public EnvironmentDtoBuilder withNetwork(NetworkDto network) {
+        public Builder withNetwork(NetworkDto network) {
             this.network = network;
             return this;
         }
 
-        public EnvironmentDtoBuilder withAccountId(String accountId) {
+        public Builder withAccountId(String accountId) {
             this.accountId = accountId;
             return this;
         }
 
-        public EnvironmentDtoBuilder withResourceCrn(String resourceCrn) {
+        public Builder withResourceCrn(String resourceCrn) {
             this.resourceCrn = resourceCrn;
             return this;
         }
 
-        public EnvironmentDtoBuilder withEnvironmentStatus(EnvironmentStatus environmentStatus) {
+        public Builder withEnvironmentStatus(EnvironmentStatus environmentStatus) {
             this.environmentStatus = environmentStatus;
+            return this;
+        }
+
+        public Builder withCreator(String creator) {
+            this.creator = creator;
             return this;
         }
 
@@ -288,7 +305,8 @@ public class EnvironmentDto implements Payload {
             environmentDto.setNetwork(network);
             environmentDto.setAccountId(accountId);
             environmentDto.setResourceCrn(resourceCrn);
-            environmentDto.setEnvironmentStatus(environmentStatus);
+            environmentDto.setStatus(environmentStatus);
+            environmentDto.setCreator(creator);
             return environmentDto;
         }
     }
